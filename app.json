@@ -30,6 +30,9 @@
       "themeColor": "#327654",
       "backgroundColor": "#F1F5EF"
     },
+    "experiments": {
+      "baseUrl": "/nutritrack"
+    },
     "plugins": [
       "expo-router",
       "expo-secure-store"
