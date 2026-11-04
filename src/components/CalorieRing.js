@@ -47,15 +47,15 @@ export default function CalorieRing({ consumed = 0, goal = 2000, burned = 0, siz
       </Svg>
 
       <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center' }]}>
-        <Text style={[typography.displayMd, { color: colors.text, lineHeight: 36 }]}>
-          {Math.round(consumed)}
+        <Text style={[typography.displayMd, { color: colors.text, lineHeight: 34 }]}>
+          {Math.round(netCalories)}
         </Text>
-        <Text style={[typography.label, { color: colors.textMuted, marginTop: 2 }]}>CONSUMED</Text>
+        <Text style={[typography.caption, { color: colors.textMuted, marginTop: 1 }]}>Net kcal</Text>
         <View style={[styles.divider, { backgroundColor: colors.border }]} />
-        <Text style={[typography.label, { color: over ? colors.error : colors.textSecondary, fontSize: 10 }]}>
-          {over ? 'OVER GOAL' : 'REMAINING'}
+        <Text style={[typography.micro, { color: over ? colors.error : colors.textSecondary }]}>
+          {over ? 'Over goal' : 'Remaining'}
         </Text>
-        <Text style={[typography.h3, { color: over ? colors.error : colors.primaryLight }]}>
+        <Text style={[typography.h4, { color: over ? colors.error : colors.primaryLight }]}>
           {over ? ('+' + Math.round(consumed - goal)) : Math.round(remaining)}
         </Text>
       </View>

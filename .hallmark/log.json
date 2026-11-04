@@ -1,0 +1,30 @@
+[
+ {
+  "date": "2026-11-04",
+  "mode": "redesign",
+  "depth": "full",
+  "scope": "app",
+  "theme": "botanical jade and warm-ivory glass (kept from project design tokens)",
+  "prompt": "mobile nutrition tracker for meals, progress, activity, and community",
+  "shape": "five app screens inside the existing tab shell",
+  "axes": {
+   "palette": "jade and warm ivory",
+   "surface": "liquid glass",
+   "type": "clear compact mobile"
+  },
+  "hero": "daily calorie balance and meal logging",
+  "nav": "five existing tabs",
+  "footer": "existing tab bar",
+  "imagery": "existing data, charts, and Ionicons",
+  "entry": "log meals",
+  "fingerprint": "nutritrack mobile redesign 2026-11-04",
+  "sections": [
+   "home",
+   "nutrition",
+   "progress and community",
+   "activity",
+   "profile"
+  ],
+  "signature": "daily calorie balance ring"
+ }
+]

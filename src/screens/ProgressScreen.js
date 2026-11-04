@@ -10,23 +10,24 @@ import Card from '../components/Card';
 import SectionHeader from '../components/SectionHeader';
 import EmptyState from '../components/EmptyState';
 import CommunityReports from '../components/CommunityReports';
+import ScreenHeader from '../components/ScreenHeader';
 import { typography, spacing, radius } from '../utils/theme';
 import { mlToDisplay } from '../utils/helpers';
 
 const TABS = ['Calories', 'Macros', 'Weight', 'Water'];
-const RANGES = ['7D', '30D'];
+const RANGES = ['7 days', '30 days'];
 
 export default function ProgressScreen() {
   const { colors, theme, getDateRangeTotals, goals, weight, addWeightEntry } = useApp();
   const { width } = useWindowDimensions();
   const chartW = Math.max(240, width - spacing.md * 2 - 32);
   const [activeTab, setActiveTab] = useState('Calories');
-  const [range, setRange] = useState('7D');
+  const [range, setRange] = useState('7 days');
   const [weightModal, setWeightModal] = useState(false);
   const [newWeight, setNewWeight] = useState('');
   const [activeView, setActiveView] = useState('self');
 
-  const days = range === '7D' ? 7 : 30;
+  const days = range === '7 days' ? 7 : 30;
   const data = getDateRangeTotals(days);
   const last7 = data.slice(-7);
 
@@ -96,10 +97,7 @@ export default function ProgressScreen() {
       <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={colors.bg} />
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View style={styles.pageHeader}>
-          <Text style={[typography.h1, { color: colors.text }]}>
-            {activeView === 'self' ? 'Progress' : 'Community'}
-          </Text>
+        <ScreenHeader title={activeView === 'self' ? 'Progress' : 'Community'}>
           {activeView === 'self' && (
             <View style={[styles.rangeToggle, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
               {RANGES.map(r => (
@@ -108,12 +106,12 @@ export default function ProgressScreen() {
                   style={[styles.rangeBtn, range === r && { backgroundColor: colors.primary }]}
                   onPress={() => setRange(r)}
                 >
-                  <Text style={[typography.micro, { color: range === r ? '#fff' : colors.textSecondary }]}>{r}</Text>
+                  <Text style={[typography.micro, { color: range === r ? colors.textInverse : colors.textSecondary }]}>{r}</Text>
                 </TouchableOpacity>
               ))}
             </View>
           )}
-        </View>
+        </ScreenHeader>
 
         <View style={[styles.viewToggle, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
           {[
@@ -127,7 +125,7 @@ export default function ProgressScreen() {
               accessibilityRole="button"
               accessibilityState={{ selected: activeView === view.key }}
             >
-              <Text style={[typography.bodySmMed, { color: activeView === view.key ? '#fff' : colors.textSecondary }]}>
+              <Text style={[typography.bodySmMed, { color: activeView === view.key ? colors.textInverse : colors.textSecondary }]}>
                 {view.label}
               </Text>
             </TouchableOpacity>
@@ -159,7 +157,7 @@ export default function ProgressScreen() {
               }]}
               onPress={() => setActiveTab(tab)}
             >
-              <Text style={[typography.bodySmMed, { color: activeTab === tab ? '#fff' : colors.textSecondary }]}>{tab}</Text>
+              <Text style={[typography.bodySmMed, { color: activeTab === tab ? colors.textInverse : colors.textSecondary }]}>{tab}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -248,7 +246,7 @@ export default function ProgressScreen() {
                   style={styles.chart} bezier withDots
                 />
               ) : (
-                <EmptyState icon="⚖️" title="No weight data" subtitle="Log your weight to see trends" action="Log Weight" onAction={() => setWeightModal(true)} />
+                <EmptyState icon="scale-outline" title="No weight data" subtitle="Log your weight to see trends" action="Log Weight" onAction={() => setWeightModal(true)} />
               )}
             </>
           )}
@@ -313,14 +311,13 @@ export default function ProgressScreen() {
               value={newWeight}
               onChangeText={setNewWeight}
               keyboardType="decimal-pad"
-              autoFocus
             />
             <View style={styles.dialogBtns}>
               <TouchableOpacity style={[styles.dialogBtn, { backgroundColor: colors.cardElevated }]} onPress={() => setWeightModal(false)}>
                 <Text style={[typography.bodyMed, { color: colors.textSecondary }]}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.dialogBtn, { backgroundColor: colors.primary }]} onPress={handleLogWeight}>
-                <Text style={[typography.bodyMed, { color: '#fff' }]}>Save</Text>
+                <Text style={[typography.bodyMed, { color: colors.textInverse }]}>Save</Text>
               </TouchableOpacity>
             </View>
           </View>

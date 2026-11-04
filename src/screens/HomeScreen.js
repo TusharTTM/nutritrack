@@ -80,7 +80,6 @@ export default function HomeScreen() {
 
   const greeting = getGreeting(profile.name);
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-  const netCalories = Math.max(totals.calories - caloriesBurned, 0);
 
 
   return (
@@ -99,13 +98,13 @@ export default function HomeScreen() {
         <Animated.View style={styles.header} entering={reduceMotion ? undefined : HOME_ENTRANCE.header}>
           <View style={styles.headerGreeting}>
             <Text numberOfLines={1} style={[typography.caption, styles.headerDate, { color: colors.textMuted }]}>{today}</Text>
-            <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.headerTitle, { color: colors.text }]}>{greeting} ✨</Text>
+            <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.headerTitle, { color: colors.text }]}>{greeting}</Text>
           </View>
           <View style={styles.headerActions}>
             {streak > 0 && (
               <View style={[styles.streakBadge, { backgroundColor: colors.primarySurface, borderColor: colors.cardBorder }]}>
-                <Ionicons name="flame" size={16} color={colors.accentPink} />
-                <Text style={[typography.h4, { color: colors.primaryLight }]}>{streak}</Text>
+                <Ionicons name="flame" size={15} color={colors.warning} />
+                <Text style={[typography.micro, { color: colors.primaryLight }]}>{streak} day streak</Text>
               </View>
             )}
           </View>
@@ -114,12 +113,11 @@ export default function HomeScreen() {
         <Card style={styles.calorieCard} elevated>
           <View style={styles.cardTitleRow}>
             <View>
-              <Text style={[typography.label, { color: colors.textMuted }]}>DAILY OVERVIEW</Text>
-              <Text style={[typography.h3, { color: colors.text, marginTop: 4 }]}>Calorie balance</Text>
+              <Text style={[typography.h3, { color: colors.text }]}>Daily calories</Text>
             </View>
             <View style={[styles.goalBadge, { backgroundColor: colors.primarySurface, borderColor: colors.cardBorder }]}>
-              <Ionicons name="sparkles" size={13} color={colors.primary} />
-              <Text style={[typography.micro, { color: colors.primaryLight }]}>{goals.calories} kcal</Text>
+              <Ionicons name="flag-outline" size={13} color={colors.primary} />
+              <Text style={[typography.micro, { color: colors.primaryLight }]}>Goal {goals.calories} kcal</Text>
             </View>
           </View>
 
@@ -128,24 +126,15 @@ export default function HomeScreen() {
               consumed={totals.calories}
               goal={goals.calories}
               burned={caloriesBurned}
-              size={Math.min(150, Math.max(116, width - 218))}
+              size={Math.min(142, Math.max(118, width - 224))}
             />
             <View style={styles.calorieSide}>
-              <Text style={[typography.label, { color: colors.textMuted }]}>DAILY GOAL</Text>
-              <Text style={[typography.displayMd, styles.goalValue, { color: colors.text }]}>{goals.calories}</Text>
-              <Text style={[typography.bodySm, { color: colors.textMuted, marginTop: -3 }]}>kcal per day</Text>
-              <View style={[styles.miniBar, { backgroundColor: colors.cardBorder, marginTop: spacing.sm }]}>
-                <Animated.View layout={reduceMotion ? undefined : PROGRESS_LAYOUT} style={[styles.miniBarFill, {
-                  width: (Math.min(pct(netCalories, goals.calories), 1) * 100) + '%',
-                  backgroundColor: colors.primary,
-                }]} />
-              </View>
-              <Text style={[typography.micro, { color: colors.primaryLight, marginTop: 5 }]}>
-                {Math.round(Math.min(pct(netCalories, goals.calories), 1) * 100)}% complete
-              </Text>
+              <Text style={[typography.caption, { color: colors.textMuted }]}>From food</Text>
+              <Text style={[typography.displayMd, styles.intakeValue, { color: colors.text }]}>{Math.round(totals.calories)}</Text>
+              <Text style={[typography.bodySm, { color: colors.textMuted, marginTop: -2 }]}>kcal eaten</Text>
               <View style={styles.burnedRow}>
                 <Ionicons name="flame-outline" size={13} color={colors.warning} />
-                <Text style={[typography.caption, { color: colors.textSecondary, marginLeft: 4 }]}>{Math.round(caloriesBurned)} kcal burned</Text>
+                <Text style={[typography.caption, { color: colors.textSecondary, marginLeft: 4 }]}>{Math.round(caloriesBurned)} burned</Text>
               </View>
             </View>
           </View>
@@ -222,7 +211,7 @@ export default function HomeScreen() {
               style={[styles.logActivityBtn, { backgroundColor: colors.primarySurface, borderColor: colors.cardBorder }]}
               onPress={() => router.navigate('/activity')}
             >
-              <Text style={[typography.micro, { color: colors.primaryLight }]}>LOG ACTIVITY</Text>
+              <Text style={[typography.micro, { color: colors.primaryLight }]}>Log activity</Text>
             </TouchableOpacity>
           </Card>
         </View>
@@ -294,8 +283,8 @@ export default function HomeScreen() {
                 }]}
                 onPress={() => setActiveCategory(cat)}
               >
-                <Text style={[typography.micro, { color: activeCategory === cat ? '#fff' : colors.textSecondary }]}>
-                  {cat.toUpperCase()}
+                <Text style={[typography.micro, { color: activeCategory === cat ? colors.textInverse : colors.textSecondary }]}>
+                  {cat}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -322,7 +311,7 @@ export default function HomeScreen() {
                   style={[styles.qtyBtn, { backgroundColor: colors.primary }]}
                   onPress={() => setQty(q => String(Math.max(0.5, parseFloat(q) - 0.5)))}
                 >
-                  <Ionicons name="remove" size={16} color="#fff" />
+                  <Ionicons name="remove" size={16} color={colors.textInverse} />
                 </TouchableOpacity>
                 <TextInput
                   style={[styles.qtyInput, { color: colors.text, borderBottomColor: colors.primary }]}
@@ -335,7 +324,7 @@ export default function HomeScreen() {
                   style={[styles.qtyBtn, { backgroundColor: colors.primary }]}
                   onPress={() => setQty(q => String(parseFloat(q) + 0.5))}
                 >
-                  <Ionicons name="add" size={16} color="#fff" />
+                  <Ionicons name="add" size={16} color={colors.textInverse} />
                 </TouchableOpacity>
                 <Text style={[typography.bodySm, { color: colors.textMuted, marginLeft: spacing.sm }]}>× serving</Text>
               </View>
@@ -380,7 +369,7 @@ export default function HomeScreen() {
               </TouchableOpacity>
             )}
             ListEmptyComponent={
-              <EmptyState icon="🔍" title="No foods found" subtitle="Try a different search term" />
+              <EmptyState icon="search-outline" title="No foods found" subtitle="Try a different search term" />
             }
           />
         </SafeAreaView>
@@ -505,7 +494,7 @@ const styles = StyleSheet.create({
   goalBadge: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: spacing.sm, paddingVertical: 7, borderRadius: radius.full, borderWidth: 1 },
   calorieRow: { flexDirection: 'row', alignItems: 'center' },
   calorieSide: { flex: 1, minWidth: 0, marginLeft: spacing.md, alignItems: 'flex-start' },
-  goalValue: { marginTop: 3, lineHeight: 34 },
+  intakeValue: { marginTop: 2, lineHeight: 34 },
   burnedRow: { flexDirection: 'row', alignItems: 'center', marginTop: spacing.sm },
   sectionIntro: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.sm },
   macroGrid: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.lg },

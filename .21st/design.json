@@ -43,9 +43,9 @@
     "density": "comfortable"
   },
   "components": {
-    "installed": ["Card", "CalorieRing"],
+    "installed": ["Card", "CalorieRing", "ScreenHeader", "EmptyState"],
     "preferredPrimitives": ["Expo LinearGradient", "Expo Router"],
-    "patterns": ["glass surface cards", "separate calorie, macro, and action sections"]
+    "patterns": ["glass surface cards", "separate calorie, macro, and action sections", "consistent mobile screen headers", "selected tab icon pills", "net calories and remaining calories share one balance"]
   },
   "constraints": {
     "must": ["keep nutrition numbers readable", "fit small phone widths"],
@@ -56,6 +56,11 @@
       "date": "2026-11-01",
       "decision": "Use a botanical jade and warm-ivory glass direction with translucent surfaces and separate dashboard sections.",
       "reason": "User requested a better color palette, clearer structure, and a liquid-glass-like UI."
+    },
+    {
+      "date": "2026-11-04",
+      "decision": "Use sentence-case labels, a shared screen header, and a consistent selected tab state across the mobile app.",
+      "reason": "The app should feel clearer and stay readable within small phone widths."
     }
   ],
   "evidence": [

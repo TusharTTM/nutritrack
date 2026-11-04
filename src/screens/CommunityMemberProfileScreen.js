@@ -84,13 +84,13 @@ export default function CommunityMemberProfileScreen() {
     <ScrollView contentContainerStyle={styles.content}>
       {loading ? <ActivityIndicator color={colors.primary} style={styles.loading} /> :
         error ? <Card style={styles.stateCard}>
-          <EmptyState icon="🔒" title="Report unavailable" subtitle="It is visible only while you are accepted group members and sharing is enabled." action="Try again" onAction={load} />
+          <EmptyState icon="lock-closed-outline" title="Report unavailable" subtitle="It is visible only while you are accepted group members and sharing is enabled." action="Try again" onAction={load} />
         </Card> :
         !profile?.share_reports && !isAdmin ? <Card style={styles.stateCard}>
-          <EmptyState icon="📊" title={profile?.display_name + ' is not sharing reports'} subtitle="They can enable daily summary sharing from their Community screen." />
+          <EmptyState icon="stats-chart-outline" title={profile?.display_name + ' is not sharing reports'} subtitle="They can enable daily summary sharing from their Community screen." />
         </Card> :
         reports.length === 0 ? <Card style={styles.stateCard}>
-          <EmptyState icon="📅" title="No shared reports yet" subtitle="Daily summaries appear after they log nutrition or water." />
+          <EmptyState icon="calendar-outline" title="No shared reports yet" subtitle="Daily summaries appear after they log nutrition or water." />
         </Card> :
         <>
           <Card style={styles.privacy}>

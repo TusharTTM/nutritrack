@@ -8,6 +8,7 @@ import { useApp } from '../context/AppContext';
 import Card from '../components/Card';
 import SectionHeader from '../components/SectionHeader';
 import EmptyState from '../components/EmptyState';
+import ScreenHeader from '../components/ScreenHeader';
 import MacroBar from '../components/MacroBar';
 import { typography, spacing, radius } from '../utils/theme';
 import { foodDatabase, mealTypes, mealIcons } from '../data/foods';
@@ -78,15 +79,16 @@ export default function NutritionScreen() {
       <ScrollView showsVerticalScrollIndicator={false}>
 
         {/* Header */}
-        <View style={styles.pageHeader}>
-          <Text style={[typography.h1, { color: colors.text }]}>Nutrition</Text>
+        <ScreenHeader title="Nutrition">
           <TouchableOpacity
             style={[styles.iconBtn, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
             onPress={() => setCustomFoodModal(true)}
+            accessibilityRole="button"
+            accessibilityLabel="Add a custom food"
           >
             <Ionicons name="add-circle-outline" size={22} color={colors.primary} />
           </TouchableOpacity>
-        </View>
+        </ScreenHeader>
 
         {/* Date strip */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.dateStrip}>
@@ -103,13 +105,13 @@ export default function NutritionScreen() {
                 }]}
                 onPress={() => setSelectedDate(date)}
               >
-                <Text style={[typography.micro, { color: isSelected ? '#fff' : colors.textMuted }]}>
-                  {['SUN','MON','TUE','WED','THU','FRI','SAT'][d.getDay()]}
+                <Text style={[typography.micro, { color: isSelected ? colors.textInverse : colors.textMuted }]}>
+                  {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]}
                 </Text>
-                <Text style={[typography.h3, { color: isSelected ? '#fff' : colors.text, marginTop: 2 }]}>
+                <Text style={[typography.h3, { color: isSelected ? colors.textInverse : colors.text, marginTop: 2 }]}>
                   {d.getDate()}
                 </Text>
-                {hasFoods && <View style={[styles.dateDot, { backgroundColor: isSelected ? '#fff' : colors.primary }]} />}
+                {hasFoods && <View style={[styles.dateDot, { backgroundColor: isSelected ? colors.textInverse : colors.primary }]} />}
               </TouchableOpacity>
             );
           })}
@@ -138,7 +140,7 @@ export default function NutritionScreen() {
               onPress={() => setActiveMealFilter(f)}
             >
               {f !== 'All' && <Text style={{ marginRight: 4 }}>{mealIcons[f]}</Text>}
-              <Text style={[typography.bodySmMed, { color: activeMealFilter === f ? '#fff' : colors.textSecondary }]}>
+              <Text style={[typography.bodySmMed, { color: activeMealFilter === f ? colors.textInverse : colors.textSecondary }]}>
                 {f}
               </Text>
             </TouchableOpacity>
@@ -164,7 +166,7 @@ export default function NutritionScreen() {
           )}
 
           {visibleItems.length === 0 ? (
-            <EmptyState icon="🥗" title="No food logged" subtitle={isToday ? "Start tracking your meals today" : "Nothing was logged on this day"} />
+            <EmptyState icon="restaurant-outline" title="No food logged" subtitle={isToday ? "Start tracking your meals today" : "Nothing was logged on this day"} />
           ) : (
             visibleItems.map(item => (
               <Card key={item.logId} style={styles.logItem} elevated>
@@ -255,7 +257,7 @@ export default function NutritionScreen() {
                 onPress={() => setAddMeal(m)}
               >
                 <Text>{mealIcons[m]}</Text>
-                <Text style={[typography.bodySmMed, { color: addMeal === m ? '#fff' : colors.textSecondary, marginLeft: 4 }]}>{m}</Text>
+                <Text style={[typography.bodySmMed, { color: addMeal === m ? colors.textInverse : colors.textSecondary, marginLeft: 4 }]}>{m}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -269,7 +271,6 @@ export default function NutritionScreen() {
               placeholderTextColor={colors.textMuted}
               value={search}
               onChangeText={setSearch}
-              autoFocus
             />
           </View>
 
@@ -282,7 +283,7 @@ export default function NutritionScreen() {
                   style={[styles.qtyBtn, { backgroundColor: colors.primary }]}
                   onPress={() => setQty(q => String(Math.max(0.5, parseFloat(q) - 0.5)))}
                 >
-                  <Ionicons name="remove" size={14} color="#fff" />
+                  <Ionicons name="remove" size={14} color={colors.textInverse} />
                 </TouchableOpacity>
                 <TextInput
                   style={[styles.qtyInput, { color: colors.text, borderBottomColor: colors.primary }]}
@@ -292,7 +293,7 @@ export default function NutritionScreen() {
                   style={[styles.qtyBtn, { backgroundColor: colors.primary }]}
                   onPress={() => setQty(q => String(parseFloat(q) + 0.5))}
                 >
-                  <Ionicons name="add" size={14} color="#fff" />
+                  <Ionicons name="add" size={14} color={colors.textInverse} />
                 </TouchableOpacity>
                 <Text style={[typography.bodySm, { color: colors.textMuted, marginLeft: spacing.sm }]}>× serving</Text>
               </View>
@@ -318,7 +319,7 @@ export default function NutritionScreen() {
                 <Text style={[typography.bodySmMed, { color: colors.primary }]}>{item.calories} kcal</Text>
               </TouchableOpacity>
             )}
-            ListEmptyComponent={<EmptyState icon="🔍" title="No foods found" />}
+            ListEmptyComponent={<EmptyState icon="search-outline" title="No foods found" />}
           />
         </SafeAreaView>
       </Modal>

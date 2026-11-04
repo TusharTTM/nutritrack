@@ -150,9 +150,9 @@ const styles = StyleSheet.create({
   dateChipActive: { backgroundColor: colors.primary },
   dateChipDay: { ...typography.caption, color: colors.textSecondary },
   dateChipNum: { ...typography.h4, color: colors.text, marginTop: 2 },
-  dateChipTextActive: { color: '#fff' },
+  dateChipTextActive: { color: colors.textInverse },
   dot: { width: 5, height: 5, borderRadius: 3, backgroundColor: colors.primary, marginTop: 3 },
-  dotActive: { backgroundColor: '#fff' },
+  dotActive: { backgroundColor: colors.textInverse },
   todayLabel: { ...typography.caption, color: colors.primary, marginTop: 2, fontWeight: '600' },
   selectedDateLabel: {
     ...typography.h4,

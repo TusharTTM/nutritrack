@@ -1,6 +1,6 @@
 // NutriTrack's premium jade and warm-ivory glass palette.
 export const darkColors = {
-  bg: '#101A17', bgSecondary: '#17231E', bgTertiary: '#223129',
+  bg: '#101A17', bgSecondary: '#17231E', bgTertiary: '#223129', shadow: '#102019',
   card: 'rgba(245, 255, 249, 0.055)', cardBorder: 'rgba(210, 235, 219, 0.14)', cardElevated: 'rgba(225, 245, 232, 0.08)',
   primary: '#79C9A2', primaryLight: '#A9E2C4', primaryDark: '#43896A', primaryMuted: 'rgba(121, 201, 162, 0.15)', primarySurface: 'rgba(121, 201, 162, 0.12)',
   accentPink: '#ECA2B7',
@@ -13,7 +13,7 @@ export const darkColors = {
   overlay: 'rgba(6, 13, 10, 0.72)', tabBar: 'rgba(18, 29, 24, 0.9)', statusBar: 'light',
 };
 export const lightColors = {
-  bg: '#F1F5EF', bgSecondary: '#FAFBF8', bgTertiary: '#E7EEE7',
+  bg: '#F1F5EF', bgSecondary: '#FAFBF8', bgTertiary: '#E7EEE7', shadow: '#102019',
   card: 'rgba(255, 255, 255, 0.88)', cardBorder: 'rgba(83, 111, 93, 0.20)', cardElevated: 'rgba(255, 255, 255, 0.96)',
   primary: '#327654', primaryLight: '#326E51', primaryDark: '#28644A', primaryMuted: 'rgba(61, 135, 102, 0.12)', primarySurface: 'rgba(83, 155, 119, 0.11)',
   accentPink: '#B74663',
@@ -39,14 +39,14 @@ export const typography = {
   bodyMed: { ...textFit, fontSize: 15, fontWeight: '500' },
   bodySm: { ...textFit, fontSize: 13, fontWeight: '400', lineHeight: 18 },
   bodySmMed: { ...textFit, fontSize: 13, fontWeight: '500' },
-  caption: { ...textFit, fontSize: 11, fontWeight: '400', letterSpacing: 0.2 },
-  label: { ...textFit, fontSize: 11, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase' },
-  micro: { ...textFit, fontSize: 10, fontWeight: '600', letterSpacing: 0.5 },
+  caption: { ...textFit, fontSize: 12, fontWeight: '400' },
+  label: { ...textFit, fontSize: 12, fontWeight: '600' },
+  micro: { ...textFit, fontSize: 11, fontWeight: '500' },
 };
 export const shadow = {
-  sm: { shadowColor: '#102019', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.09, shadowRadius: 12, elevation: 3 },
-  md: { shadowColor: '#102019', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.13, shadowRadius: 18, elevation: 4 },
-  lg: { shadowColor: '#102019', shadowOffset: { width: 0, height: 9 }, shadowOpacity: 0.17, shadowRadius: 24, elevation: 6 },
+  sm: { shadowColor: darkColors.shadow, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.09, shadowRadius: 12, elevation: 3 },
+  md: { shadowColor: darkColors.shadow, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.13, shadowRadius: 18, elevation: 4 },
+  lg: { shadowColor: darkColors.shadow, shadowOffset: { width: 0, height: 9 }, shadowOpacity: 0.17, shadowRadius: 24, elevation: 6 },
   glow: (color) => ({ shadowColor: color, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, shadowRadius: 14, elevation: 4 }),
 };
 export const colors = darkColors;

@@ -277,7 +277,7 @@ export default function CommunityReports() {
           <Text style={[typography.bodySmMed, { color: colors.text }]}>Share daily summaries</Text>
           <Text style={[typography.caption, { color: colors.textMuted, marginTop: 3 }]}>Accepted members can see your last 30 days of calories, macros, and water.</Text>
         </View>
-        <Switch value={sharing} onValueChange={changeSharing} disabled={shareBusy} trackColor={{ false: colors.cardBorder, true: colors.primary }} thumbColor="#FFFFFF" accessibilityLabel="Share daily summaries" />
+        <Switch value={sharing} onValueChange={changeSharing} disabled={shareBusy} trackColor={{ false: colors.cardBorder, true: colors.primary }} thumbColor={colors.textInverse} accessibilityLabel="Share daily summaries" />
       </View>
     </Card>
 
@@ -309,7 +309,7 @@ export default function CommunityReports() {
       {matches.length === 0 && name.trim().length >= 2 && !busy ? <Text style={[typography.caption, { color: colors.textMuted, marginTop: spacing.sm }]}>No match found for that exact name.</Text> : null}
     </Card>}
 
-    {incoming.length > 0 && <Section label="REQUESTS FOR YOU" colors={colors}>
+    {incoming.length > 0 && <Section label="Requests for you" colors={colors}>
       {incoming.map(r => <Card key={r.request_id} style={styles.requestCard}>
         <View style={styles.memberRow}>
           <Avatar name={otherMember(r, session.user.id).name} colors={colors} />
@@ -318,12 +318,12 @@ export default function CommunityReports() {
             <Text style={[typography.caption, { color: colors.textMuted }]}>Wants to join your group</Text>
           </View>
           <Pressable style={[styles.smallOutline, { borderColor: colors.cardBorder }]} onPress={() => reply(r.request_id, false)} accessibilityRole="button"><Text style={[typography.caption, { color: colors.textSecondary }]}>Decline</Text></Pressable>
-          <Pressable style={[styles.acceptButton, { backgroundColor: colors.primary }]} onPress={() => reply(r.request_id, true)} accessibilityRole="button"><Text style={[typography.caption, { color: '#fff' }]}>Accept</Text></Pressable>
+          <Pressable style={[styles.acceptButton, { backgroundColor: colors.primary }]} onPress={() => reply(r.request_id, true)} accessibilityRole="button"><Text style={[typography.caption, { color: colors.textInverse }]}>Accept</Text></Pressable>
         </View>
       </Card>)}
     </Section>}
 
-    {outgoing.length > 0 && <Section label="SENT REQUESTS" colors={colors}>
+    {outgoing.length > 0 && <Section label="Sent requests" colors={colors}>
       {outgoing.map(r => <Card key={r.request_id} style={styles.requestCard}>
         <View style={styles.memberRow}>
           <Avatar name={otherMember(r, session.user.id).name} colors={colors} />
@@ -335,9 +335,9 @@ export default function CommunityReports() {
       </Card>)}
     </Section>}
 
-    <Section label="ACCEPTED MEMBERS" colors={colors}>
+    <Section label="Accepted members" colors={colors}>
       {busy && requests.length === 0 ? <ActivityIndicator style={{ padding: spacing.lg }} color={colors.primary} /> :
-        members.length === 0 ? <EmptyState icon="👥" title="Your group is empty" subtitle="Add someone by their exact name. Their reports appear after they accept and enable sharing." /> :
+        members.length === 0 ? <EmptyState icon="people-outline" title="Your group is empty" subtitle="Add someone by their exact name. Their reports appear after they accept and enable sharing." /> :
         members.map(member => <Card key={member.id} style={styles.memberCard} elevated>
           <View style={styles.memberRow}>
             <Pressable style={[styles.memberPress, styles.flex]} onPress={() => router.push({ pathname: '/community/[userId]', params: { userId: member.id } })} accessibilityRole="button" accessibilityLabel={'View ' + member.name + ' report'}>
@@ -353,11 +353,11 @@ export default function CommunityReports() {
         </Card>)
       }
     </Section>
-    {isAdmin && <Section label="ADMIN · ALL COMMUNITY REPORTS" colors={colors}>
+    {isAdmin && <Section label="All community reports" colors={colors}>
       <Text style={[typography.caption, { color: colors.textMuted, marginBottom: spacing.sm }]}>
         Admin access · daily summaries from all accounts, when present. Meal details and device-only logs are not stored here.
       </Text>
-      {adminProfiles.length === 0 ? <EmptyState icon="📋" title="No Community accounts yet" subtitle="New accounts will appear here." /> :
+      {adminProfiles.length === 0 ? <EmptyState icon="clipboard-outline" title="No Community accounts yet" subtitle="New accounts will appear here." /> :
         adminProfiles.map(person => <Card key={person.user_id} style={styles.memberCard} elevated>
           <Pressable style={styles.memberRow} onPress={() => router.push({ pathname: '/community/[userId]', params: { userId: person.user_id } })} accessibilityRole="button" accessibilityLabel={'View admin report for ' + person.display_name}>
             <Avatar name={person.display_name} colors={colors} />
@@ -386,7 +386,7 @@ function Field({ label, colors, ...props }) {
 
 function Action({ label, onPress, disabled, colors, compact }) {
   return <Pressable onPress={onPress} disabled={disabled} accessibilityRole="button" style={[styles.action, compact && styles.compactAction, { backgroundColor: disabled ? colors.cardBorder : colors.primary }]}>
-    <Text style={[typography.bodySmMed, { color: disabled ? colors.textMuted : '#fff' }]}>{label}</Text>
+    <Text style={[typography.bodySmMed, { color: disabled ? colors.textMuted : colors.textInverse }]}>{label}</Text>
   </Pressable>;
 }
 
@@ -433,7 +433,7 @@ const styles = StyleSheet.create({
   searchRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minWidth: 0 },
   matchRow: { flexDirection: 'row', alignItems: 'center', borderTopWidth: 1, marginTop: spacing.sm, paddingTop: spacing.sm, minWidth: 0, gap: spacing.sm },
   section: { marginTop: spacing.md },
-  sectionLabel: { marginBottom: spacing.xs, letterSpacing: 1 },
+  sectionLabel: { marginBottom: spacing.xs },
   requestCard: { marginBottom: spacing.xs },
   memberCard: { marginBottom: spacing.xs, minWidth: 0 },
   memberRow: { flexDirection: 'row', alignItems: 'center', minWidth: 0 },

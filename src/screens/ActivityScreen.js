@@ -9,6 +9,7 @@ import { useApp } from '../context/AppContext';
 import Card from '../components/Card';
 import SectionHeader from '../components/SectionHeader';
 import EmptyState from '../components/EmptyState';
+import ScreenHeader from '../components/ScreenHeader';
 import { typography, spacing, radius } from '../utils/theme';
 import { activityDatabase, calcActivityCalories } from '../data/foods';
 
@@ -70,16 +71,17 @@ export default function ActivityScreen() {
       <ScrollView showsVerticalScrollIndicator={false}>
 
         {/* Header */}
-        <View style={styles.pageHeader}>
-          <Text style={[typography.h1, { color: colors.text }]}>Activity</Text>
+        <ScreenHeader title="Activity">
           <TouchableOpacity
             style={[styles.addBtn, { backgroundColor: colors.primary }]}
             onPress={() => { setSelectedActivity(null); setDuration('30'); setAddModal(true); }}
+            accessibilityRole="button"
+            accessibilityLabel="Log activity"
           >
-            <Ionicons name="add" size={18} color="#fff" />
-            <Text style={[typography.bodyMed, { color: '#fff', marginLeft: 4 }]}>Log</Text>
+            <Ionicons name="add" size={18} color={colors.textInverse} />
+            <Text style={[typography.bodyMed, { color: colors.textInverse, marginLeft: 4 }]}>Log</Text>
           </TouchableOpacity>
-        </View>
+        </ScreenHeader>
 
         {/* Summary row */}
         <View style={styles.summaryRow}>
@@ -97,7 +99,7 @@ export default function ActivityScreen() {
 
           {todayActivities.length === 0 ? (
             <EmptyState
-              icon="🏃"
+              icon="walk-outline"
               title="No activity logged"
               subtitle="Track your workouts to see calories burned"
               action="Log Activity"
@@ -147,8 +149,8 @@ export default function ActivityScreen() {
                 }]}
                 onPress={() => setActiveCategory(cat)}
               >
-                <Text style={[typography.micro, { color: activeCategory === cat ? '#fff' : colors.textSecondary }]}>
-                  {cat.toUpperCase()}
+                <Text style={[typography.micro, { color: activeCategory === cat ? colors.textInverse : colors.textSecondary }]}>
+                  {cat}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -245,7 +247,7 @@ export default function ActivityScreen() {
                     }]}
                     onPress={() => setDuration(String(d))}
                   >
-                    <Text style={[typography.bodySmMed, { color: duration === String(d) ? '#fff' : colors.textSecondary }]}>{d}m</Text>
+                    <Text style={[typography.bodySmMed, { color: duration === String(d) ? colors.textInverse : colors.textSecondary }]}>{d}m</Text>
                   </TouchableOpacity>
                 ))}
                 <TextInput

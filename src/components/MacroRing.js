@@ -31,7 +31,7 @@ export default function MacroRing({ value = 0, goal = 100, color, label, unit = 
         <Text style={[styles.val, { color: over ? colors.error : color }]}>{Math.round(value)}</Text>
         <Text style={[typography.micro, { color: colors.textMuted }]}>{unit}</Text>
       </View>
-      <Text style={[typography.micro, { color: colors.textSecondary, marginTop: spacing.xs, textTransform: 'uppercase' }]}>{label}</Text>
+      <Text style={[typography.micro, { color: colors.textSecondary, marginTop: spacing.xs }]}>{label}</Text>
     </View>
   );
 }

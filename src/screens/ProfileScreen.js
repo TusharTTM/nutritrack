@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../context/AppContext';
 import Card from '../components/Card';
 import SectionHeader from '../components/SectionHeader';
+import ScreenHeader from '../components/ScreenHeader';
 import { typography, spacing, radius } from '../utils/theme';
 import { kgToDisplay } from '../utils/helpers';
 
@@ -74,15 +75,16 @@ export default function ProfileScreen() {
       <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={colors.bg} />
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View style={styles.pageHeader}>
-          <Text style={[typography.h1, { color: colors.text }]}>Profile</Text>
+        <ScreenHeader title="Profile">
           <TouchableOpacity
             style={[styles.themeBtn, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
             onPress={toggleTheme}
+            accessibilityRole="button"
+            accessibilityLabel={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           >
             <Ionicons name={theme === 'dark' ? 'sunny' : 'moon'} size={18} color={colors.textSecondary} />
           </TouchableOpacity>
-        </View>
+        </ScreenHeader>
 
         {/* Avatar card */}
         <Card style={styles.avatarCard} elevated>
@@ -152,7 +154,7 @@ export default function ProfileScreen() {
                     onPress={() => setLocalProfile(p => ({ ...p, gender: g.toLowerCase() }))}
                   >
                     <Text style={[typography.caption, {
-                      color: localProfile.gender === g.toLowerCase() ? '#fff' : colors.textSecondary,
+                      color: localProfile.gender === g.toLowerCase() ? colors.textInverse : colors.textSecondary,
                     }]}>
                       {g}
                     </Text>
@@ -285,7 +287,7 @@ export default function ProfileScreen() {
               value={theme === 'dark'}
               onValueChange={toggleTheme}
               trackColor={{ false: colors.cardBorder, true: colors.primary }}
-              thumbColor="#fff"
+              thumbColor={colors.textInverse}
             />
           </View>
           {session && <TouchableOpacity

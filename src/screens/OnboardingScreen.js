@@ -163,7 +163,6 @@ export default function OnboardingScreen() {
               placeholderTextColor={colors.textMuted}
               value={form.name}
               onChangeText={v => update('name', v)}
-              autoFocus
               autoCapitalize="words"
               returnKeyType="done"
             />
@@ -191,7 +190,7 @@ export default function OnboardingScreen() {
                   }]}
                   onPress={() => update('gender', g.key)}
                 >
-                  <Text style={[typography.bodyMed, { color: form.gender === g.key ? '#fff' : colors.textSecondary }]}>{g.label}</Text>
+                  <Text style={[typography.bodyMed, { color: form.gender === g.key ? colors.textInverse : colors.textSecondary }]}>{g.label}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -362,11 +361,11 @@ export default function OnboardingScreen() {
           onPress={next}
           disabled={!canProceed()}
         >
-          <Text style={[typography.h4, { color: '#fff' }]}>
+          <Text style={[typography.h4, { color: colors.textInverse }]}>
             {step === 0 ? 'Get Started' : step === STEPS.length - 1 ? 'Start Tracking 🚀' : 'Continue'}
           </Text>
           {step !== STEPS.length - 1 && (
-            <Ionicons name="arrow-forward" size={18} color="#fff" style={{ marginLeft: spacing.sm }} />
+            <Ionicons name="arrow-forward" size={18} color={colors.textInverse} style={{ marginLeft: spacing.sm }} />
           )}
         </TouchableOpacity>
       </View>
