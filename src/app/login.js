@@ -1,1 +1,6 @@
-export { default } from '../screens/LoginScreen';
+import React from 'react';
+import { Redirect } from 'expo-router';
+
+export default function LoginRedirect() {
+  return <Redirect href="/" />;
+}

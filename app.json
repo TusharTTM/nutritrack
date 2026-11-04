@@ -9,9 +9,6 @@
     "ios": {
       "supportsTablet": true
     },
-    "experiments": {
-  "baseUrl": "/nutritrack"
-}
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",

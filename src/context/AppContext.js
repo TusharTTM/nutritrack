@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { darkColors, lightColors } from '../utils/theme';
 import { getDateKey } from '../utils/helpers';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
-import { signInToCommunity, signOutOfCommunity, signUpForCommunity } from '../services/communityService';
+import { signOutOfCommunity } from '../services/communityService';
 
 const AppContext = createContext();
 export const useApp = () => useContext(AppContext);
@@ -46,6 +46,7 @@ const KEYS = {
   THEME: 'nt_theme',
 };
 const LEGACY_DATA_OWNER_KEY = 'nt_legacy_data_owner';
+const LOCAL_GUEST_ID = 'local_guest';
 const ACCOUNT_DATA_KEYS = Object.values(KEYS).filter(key => key !== KEYS.THEME);
 const accountStorageKey = (key, userId) => `${key}_${userId}`;
 
@@ -150,7 +151,7 @@ export const AppProvider = ({ children }) => {
     let active = true;
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       if (!active) return;
-      const nextUserId = nextSession?.user?.id || null;
+      const nextUserId = nextSession?.user?.id || LOCAL_GUEST_ID;
       const accountChanged = !authResolved.current || activeUserId.current !== nextUserId;
       setSession(nextSession);
       setAuthLoading(false);
@@ -166,10 +167,17 @@ export const AppProvider = ({ children }) => {
     };
   }, [loadAccountData, resetAccountData]);
 
-  const signIn = useCallback((email, password) => signInToCommunity(email, password), []);
-  const signUp = useCallback(({ displayName, email, password }) => (
-    signUpForCommunity({ displayName, email, password })
-  ), []);
+  useEffect(() => {
+    if (supabase) return undefined;
+    let active = true;
+    Promise.resolve().then(() => {
+      if (!active) return;
+      authResolved.current = true;
+      loadAccountData(LOCAL_GUEST_ID);
+    });
+    return () => { active = false; };
+  }, [loadAccountData]);
+
   const signOut = useCallback(() => signOutOfCommunity(), []);
 
   const persist = async (key, value) => {
@@ -395,7 +403,7 @@ export const AppProvider = ({ children }) => {
       // Theme
       theme, colors, toggleTheme,
       // Authentication
-      session, authLoading, signIn, signUp, signOut,
+      session, authLoading, signOut,
       // Profile
       profile, saveProfile, completeOnboarding,
       // Goals
