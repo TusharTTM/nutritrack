@@ -1,29 +1,47 @@
-// NutriTrack's premium jade and warm-ivory glass palette.
+// NutriTrack — "Verdant Glow" fresh palette.
+// A vibrant green → teal → aqua identity with deep, rich dark surfaces and a
+// bright, airy light mode. Signature gradients live in `gradients` / `brand`.
+export const gradients = {
+  brand: ['#57E39E', '#2FD3A6', '#26C6D9'],
+  brandStrong: ['#3FD98A', '#17BE9E', '#16A9C4'],
+  brandSoft: ['rgba(87, 227, 158, 0.22)', 'rgba(38, 198, 217, 0.06)'],
+  accent: ['#FFC24D', '#FF7A66'],
+  aqua: ['#3ED0E6', '#5C8CFF'],
+  sheen: ['rgba(255, 255, 255, 0.16)', 'rgba(255, 255, 255, 0.04)'],
+};
+
+export const brand = {
+  markFrom: '#57E39E',
+  markVia: '#2FD3A6',
+  markTo: '#26C6D9',
+  glow: 'rgba(87, 227, 158, 0.45)',
+};
+
 export const darkColors = {
-  bg: '#101A17', bgSecondary: '#17231E', bgTertiary: '#223129', shadow: '#102019',
-  card: 'rgba(245, 255, 249, 0.055)', cardBorder: 'rgba(210, 235, 219, 0.14)', cardElevated: 'rgba(225, 245, 232, 0.08)',
-  primary: '#79C9A2', primaryLight: '#A9E2C4', primaryDark: '#43896A', primaryMuted: 'rgba(121, 201, 162, 0.15)', primarySurface: 'rgba(121, 201, 162, 0.12)',
-  accentPink: '#ECA2B7',
-  glassHighlight: ['rgba(255, 255, 255, 0.14)', 'rgba(204, 238, 216, 0.055)', 'rgba(255, 255, 255, 0.012)'],
-  backgroundGradient: ['#101A17', '#172722', '#111F1C'],
-  text: '#F2F7F2', textSecondary: '#C1D0C5', textMuted: '#89988E', textInverse: '#FFFFFF',
-  success: '#84D6A7', error: '#F28A83', warning: '#EBC777', info: '#78C9D9',
-  protein: '#87BDE8', carbs: '#E5B967', fat: '#E99AAF', fiber: '#85CF99', water: '#75C9DA',
-  border: 'rgba(210, 235, 219, 0.14)', borderLight: 'rgba(210, 235, 219, 0.075)', divider: 'rgba(210, 235, 219, 0.11)',
-  overlay: 'rgba(6, 13, 10, 0.72)', tabBar: 'rgba(18, 29, 24, 0.9)', statusBar: 'light',
+  bg: '#0B1712', bgSecondary: '#10201A', bgTertiary: '#172A21', shadow: '#03130C',
+  card: 'rgba(226, 252, 238, 0.055)', cardBorder: 'rgba(150, 235, 195, 0.16)', cardElevated: 'rgba(205, 245, 226, 0.09)',
+  primary: '#4FD98A', primaryLight: '#8BF0B8', primaryDark: '#2BA96C', primaryMuted: 'rgba(79, 217, 138, 0.16)', primarySurface: 'rgba(79, 217, 138, 0.13)',
+  accent: '#38D6D0', accentPink: '#FF8FB0',
+  glassHighlight: ['rgba(255, 255, 255, 0.16)', 'rgba(190, 245, 214, 0.06)', 'rgba(255, 255, 255, 0.012)'],
+  backgroundGradient: ['#0B1712', '#122A20', '#0C1B17'],
+  text: '#EBF7EF', textSecondary: '#BCD2C4', textMuted: '#7E9287', textInverse: '#052018',
+  success: '#4FD98A', error: '#FF6F61', warning: '#FFB13D', info: '#38D6D0',
+  protein: '#5CA8FF', carbs: '#FFC24D', fat: '#FF8FB0', fiber: '#57DE8B', water: '#3FD0E6',
+  border: 'rgba(150, 235, 195, 0.16)', borderLight: 'rgba(150, 235, 195, 0.08)', divider: 'rgba(150, 235, 195, 0.12)',
+  overlay: 'rgba(3, 16, 11, 0.74)', tabBar: 'rgba(13, 26, 21, 0.9)', statusBar: 'light',
 };
 export const lightColors = {
-  bg: '#F1F5EF', bgSecondary: '#FAFBF8', bgTertiary: '#E7EEE7', shadow: '#102019',
-  card: 'rgba(255, 255, 255, 0.88)', cardBorder: 'rgba(83, 111, 93, 0.20)', cardElevated: 'rgba(255, 255, 255, 0.96)',
-  primary: '#327654', primaryLight: '#326E51', primaryDark: '#28644A', primaryMuted: 'rgba(61, 135, 102, 0.12)', primarySurface: 'rgba(83, 155, 119, 0.11)',
-  accentPink: '#B74663',
-  glassHighlight: ['rgba(255, 255, 255, 0.97)', 'rgba(223, 240, 226, 0.52)', 'rgba(255, 255, 255, 0.16)'],
-  backgroundGradient: ['#EEF5EF', '#FBFCF8', '#EAF2F1'],
-  text: '#20342A', textSecondary: '#52655A', textMuted: '#637167', textInverse: '#FFFFFF',
-  success: '#26784E', error: '#B64E4B', warning: '#906518', info: '#246F7E',
-  protein: '#3F6D8A', carbs: '#865A15', fat: '#A74E68', fiber: '#427B51', water: '#246F7E',
-  border: 'rgba(83, 111, 93, 0.16)', borderLight: 'rgba(83, 111, 93, 0.08)', divider: 'rgba(83, 111, 93, 0.12)',
-  overlay: 'rgba(17, 29, 22, 0.46)', tabBar: 'rgba(250, 252, 248, 0.92)', statusBar: 'dark',
+  bg: '#EDF6F0', bgSecondary: '#F8FCF9', bgTertiary: '#E0EEE6', shadow: '#0A1F15',
+  card: 'rgba(255, 255, 255, 0.9)', cardBorder: 'rgba(35, 120, 85, 0.20)', cardElevated: 'rgba(255, 255, 255, 0.98)',
+  primary: '#0FA05B', primaryLight: '#0B7E48', primaryDark: '#0A6438', primaryMuted: 'rgba(15, 160, 91, 0.12)', primarySurface: 'rgba(15, 160, 91, 0.10)',
+  accent: '#0FA5A0', accentPink: '#C24A6E',
+  glassHighlight: ['rgba(255, 255, 255, 0.98)', 'rgba(220, 245, 231, 0.5)', 'rgba(255, 255, 255, 0.16)'],
+  backgroundGradient: ['#E8F4ED', '#FBFDF9', '#E0F1EA'],
+  text: '#10251B', textSecondary: '#3F584B', textMuted: '#5B6F63', textInverse: '#FFFFFF',
+  success: '#0F8A4E', error: '#C24A42', warning: '#9A6A0A', info: '#127C82',
+  protein: '#2F6FB2', carbs: '#B27A12', fat: '#C2557A', fiber: '#2E8B4F', water: '#127C82',
+  border: 'rgba(35, 120, 85, 0.16)', borderLight: 'rgba(35, 120, 85, 0.08)', divider: 'rgba(35, 120, 85, 0.12)',
+  overlay: 'rgba(10, 31, 21, 0.44)', tabBar: 'rgba(248, 252, 249, 0.94)', statusBar: 'dark',
 };
 export const spacing = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 };
 export const radius = { xs: 6, sm: 10, md: 14, lg: 20, xl: 28, full: 999 };
@@ -44,9 +62,9 @@ export const typography = {
   micro: { ...textFit, fontSize: 11, fontWeight: '500' },
 };
 export const shadow = {
-  sm: { shadowColor: darkColors.shadow, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.09, shadowRadius: 12, elevation: 3 },
-  md: { shadowColor: darkColors.shadow, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.13, shadowRadius: 18, elevation: 4 },
-  lg: { shadowColor: darkColors.shadow, shadowOffset: { width: 0, height: 9 }, shadowOpacity: 0.17, shadowRadius: 24, elevation: 6 },
-  glow: (color) => ({ shadowColor: color, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, shadowRadius: 14, elevation: 4 }),
+  sm: { shadowColor: darkColors.shadow, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.14, shadowRadius: 12, elevation: 3 },
+  md: { shadowColor: darkColors.shadow, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.18, shadowRadius: 18, elevation: 4 },
+  lg: { shadowColor: darkColors.shadow, shadowOffset: { width: 0, height: 9 }, shadowOpacity: 0.22, shadowRadius: 24, elevation: 6 },
+  glow: (color) => ({ shadowColor: color, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.32, shadowRadius: 16, elevation: 5 }),
 };
 export const colors = darkColors;

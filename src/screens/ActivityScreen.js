@@ -12,6 +12,7 @@ import EmptyState from '../components/EmptyState';
 import ScreenHeader from '../components/ScreenHeader';
 import { typography, spacing, radius } from '../utils/theme';
 import { activityDatabase, calcActivityCalories } from '../data/foods';
+import ActivityIcon, { activityColor } from '../components/ActivityIcon';
 
 
 export default function ActivityScreen() {
@@ -109,8 +110,8 @@ export default function ActivityScreen() {
             todayActivities.map(activity => (
               <Card key={activity.id} style={styles.actCard} elevated>
                 <View style={styles.actRow}>
-                  <View style={[styles.actIconBox, { backgroundColor: colors.warning + '18' }]}>
-                    <Text style={{ fontSize: 24 }}>{activity.icon}</Text>
+                  <View style={[styles.actIconBox, { backgroundColor: activityColor(activity.category, colors) + '1f' }]}>
+                    <ActivityIcon name={activity.name} category={activity.category} size={26} />
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={[typography.h4, { color: colors.text }]}>{activity.name}</Text>
@@ -165,7 +166,7 @@ export default function ActivityScreen() {
                   style={[styles.actGridCard, { width: (width - spacing.md * 2 - spacing.sm * (gridColumns - 1)) / gridColumns, backgroundColor: colors.card, borderColor: colors.cardBorder }]}
                   onPress={() => { setSelectedActivity(act); setDuration('30'); setAddModal(true); }}
                 >
-                  <Text style={{ fontSize: 28 }}>{act.icon}</Text>
+                  <ActivityIcon name={act.name} category={act.category} size={30} />
                   <Text numberOfLines={2} style={[typography.caption, { color: colors.text, marginTop: 6, textAlign: 'center', flexShrink: 1 }]}>{act.name}</Text>
                   <Text style={[typography.micro, { color: colors.textMuted, marginTop: 2 }]}>~{est}/30m</Text>
                 </TouchableOpacity>
@@ -211,7 +212,7 @@ export default function ActivityScreen() {
                   }]}
                   onPress={() => setSelectedActivity(act)}
                 >
-                  <Text style={{ fontSize: 24 }}>{act.icon}</Text>
+                  <ActivityIcon name={act.name} category={act.category} size={26} />
                   <Text numberOfLines={2} style={[typography.caption, { flexShrink: 1,
                     color: selectedActivity?.id === act.id ? colors.primaryLight : colors.textSecondary,
                     textAlign: 'center', marginTop: 4,
@@ -265,7 +266,7 @@ export default function ActivityScreen() {
             {selectedActivity && (
               <Card style={{ borderColor: colors.primary + '40' }} elevated>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text style={{ fontSize: 36 }}>{selectedActivity.icon}</Text>
+                  <ActivityIcon name={selectedActivity.name} category={selectedActivity.category} size={40} />
                   <View style={{ flex: 1, marginLeft: spacing.md }}>
                     <Text style={[typography.h4, { color: colors.text }]}>
                       {selectedActivity.id === 'a16' && customName ? customName : selectedActivity.name}

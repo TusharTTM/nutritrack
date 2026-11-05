@@ -11,14 +11,16 @@ import EmptyState from '../components/EmptyState';
 import ScreenHeader from '../components/ScreenHeader';
 import MacroBar from '../components/MacroBar';
 import { typography, spacing, radius } from '../utils/theme';
-import { foodDatabase, mealTypes, mealIcons } from '../data/foods';
+import { foodDatabase } from '../data/foods';
 import { getLast7Keys, getDayLabel, getTodayKey } from '../utils/helpers';
+import MealGlyph, { mealColor } from '../components/MealGlyph';
+import CategoryIcon, { categoryColor } from '../components/CategoryIcon';
 
 export default function NutritionScreen() {
   const {
     colors, theme, goals, getLogsForDate, calcTotals,
     addFoodLog, removeFoodLog, customFoods, addCustomFood,
-    profile,
+    profile, mealTypes,
   } = useApp();
 
   const [selectedDate, setSelectedDate] = useState(getTodayKey());
@@ -139,7 +141,7 @@ export default function NutritionScreen() {
               }]}
               onPress={() => setActiveMealFilter(f)}
             >
-              {f !== 'All' && <Text style={{ marginRight: 4 }}>{mealIcons[f]}</Text>}
+              {f !== 'All' && <View style={{ marginRight: 5 }}><MealGlyph meal={f} index={mealTypes.indexOf(f)} size={16} /></View>}
               <Text style={[typography.bodySmMed, { color: activeMealFilter === f ? colors.textInverse : colors.textSecondary }]}>
                 {f}
               </Text>
@@ -171,7 +173,9 @@ export default function NutritionScreen() {
             visibleItems.map(item => (
               <Card key={item.logId} style={styles.logItem} elevated>
                 <View style={styles.logItemRow}>
-                  <Text style={{ fontSize: 22, marginRight: spacing.sm }}>{mealIcons[item.meal]}</Text>
+                  <View style={[styles.logIconBox, { backgroundColor: mealColor(item.meal, colors) + '1f' }]}>
+                    <MealGlyph meal={item.meal} index={Math.max(0, mealTypes.indexOf(item.meal))} size={20} />
+                  </View>
                   <View style={{ flex: 1 }}>
                     <Text style={[typography.bodyMed, { color: colors.text }]}>{item.name}</Text>
                     <Text style={[typography.caption, { color: colors.textMuted }]}>
@@ -256,7 +260,7 @@ export default function NutritionScreen() {
                 }]}
                 onPress={() => setAddMeal(m)}
               >
-                <Text>{mealIcons[m]}</Text>
+                <MealGlyph meal={m} index={mealTypes.indexOf(m)} size={18} />
                 <Text style={[typography.bodySmMed, { color: addMeal === m ? colors.textInverse : colors.textSecondary, marginLeft: 4 }]}>{m}</Text>
               </TouchableOpacity>
             ))}
@@ -312,6 +316,9 @@ export default function NutritionScreen() {
                 }]}
                 onPress={() => setSelectedFood(item)}
               >
+                <View style={[styles.foodIconBox, { backgroundColor: categoryColor(item.category, colors) + '1a' }]}>
+                  <CategoryIcon category={item.category} size={20} />
+                </View>
                 <View style={{ flex: 1 }}>
                   <Text style={[typography.bodyMed, { color: colors.text }]}>{item.name}</Text>
                   <Text style={[typography.caption, { color: colors.textMuted }]}>{item.serving} · {item.category}</Text>
@@ -399,6 +406,10 @@ const styles = StyleSheet.create({
   },
   logItem: { marginBottom: spacing.sm },
   logItemRow: { flexDirection: 'row', alignItems: 'center' },
+  logIconBox: {
+    width: 42, height: 42, borderRadius: radius.md,
+    alignItems: 'center', justifyContent: 'center', marginRight: spacing.sm,
+  },
   macroChips: { flexDirection: 'row', marginTop: 4 },
   recentChip: { padding: spacing.sm, borderRadius: radius.md, borderWidth: 1, minWidth: 100, gap: 2 },
   modal: { flex: 1 },
@@ -426,6 +437,10 @@ const styles = StyleSheet.create({
   foodRow: {
     flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: spacing.md, paddingVertical: spacing.md, borderBottomWidth: 1,
+  },
+  foodIconBox: {
+    width: 38, height: 38, borderRadius: radius.sm,
+    alignItems: 'center', justifyContent: 'center', marginRight: spacing.sm,
   },
   formInput: {
     borderWidth: 1, borderRadius: radius.md,

@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  SafeAreaView, StatusBar, Modal, TextInput, FlatList, useWindowDimensions,
+  SafeAreaView, StatusBar, Modal, TextInput, FlatList, useWindowDimensions, Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -14,8 +14,10 @@ import Card from '../components/Card';
 import SectionHeader from '../components/SectionHeader';
 import EmptyState from '../components/EmptyState';
 import { typography, spacing, radius } from '../utils/theme';
-import { foodDatabase, mealTypes, mealIcons } from '../data/foods';
+import { foodDatabase } from '../data/foods';
 import { getGreeting, mlToDisplay, pct } from '../utils/helpers';
+import MealGlyph, { mealColor } from '../components/MealGlyph';
+import { LogoMark } from '../components/Logo';
 
 const HOME_ENTRANCE = {
   header: FadeInDown.duration(300),
@@ -36,6 +38,7 @@ export default function HomeScreen() {
     calcTotals, getTodayWater, addWater,
     getStreak, calcActivityCalories, getTodayActivities,
     customFoods, isFavorite, toggleFavorite, profile,
+    mealTypes, addMealType, renameMealType, removeMealType,
   } = useApp();
 
   const [foodModal, setFoodModal] = useState(false);
@@ -44,6 +47,11 @@ export default function HomeScreen() {
   const [selectedFood, setSelectedFood] = useState(null);
   const [qty, setQty] = useState('1');
   const [activeCategory, setActiveCategory] = useState('All');
+  const [mealEditor, setMealEditor] = useState(null); // { mode, original, value }
+  const [mealEditorError, setMealEditorError] = useState('');
+
+  const defaultMeals = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
+  const isCustomMeal = (meal) => !defaultMeals.includes(meal);
 
   const todayLogs = getTodayLogs();
   const totals = calcTotals(todayLogs);
@@ -78,6 +86,32 @@ export default function HomeScreen() {
     setFoodModal(false);
   }, [selectedFood, selectedMeal, qty, addFoodLog]);
 
+  const submitMealEditor = useCallback(async () => {
+    const value = (mealEditor?.value || '').trim();
+    if (!value) { setMealEditorError('Enter a name for this meal.'); return; }
+    const ok = mealEditor.mode === 'add'
+      ? await addMealType(value)
+      : await renameMealType(mealEditor.original, value);
+    if (!ok) { setMealEditorError('That name is already used.'); return; }
+    setMealEditor(null);
+    setMealEditorError('');
+  }, [mealEditor, addMealType, renameMealType]);
+
+  const confirmDeleteMeal = useCallback((name) => {
+    Alert.alert(
+      'Delete meal?',
+      `"${name}" and everything logged under it will be removed.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: () => removeMealType(name) },
+      ],
+    );
+  }, [removeMealType]);
+
+  const initials = profile.name
+    ? profile.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+    : '';
+
   const greeting = getGreeting(profile.name);
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
@@ -96,6 +130,9 @@ export default function HomeScreen() {
           style={StyleSheet.absoluteFillObject}
         />
         <Animated.View style={styles.header} entering={reduceMotion ? undefined : HOME_ENTRANCE.header}>
+          <View style={styles.headerLogo}>
+            <LogoMark size={44} />
+          </View>
           <View style={styles.headerGreeting}>
             <Text numberOfLines={1} style={[typography.caption, styles.headerDate, { color: colors.textMuted }]}>{today}</Text>
             <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.headerTitle, { color: colors.text }]}>{greeting}</Text>
@@ -107,6 +144,16 @@ export default function HomeScreen() {
                 <Text style={[typography.micro, { color: colors.primaryLight }]}>{streak} day streak</Text>
               </View>
             )}
+            <TouchableOpacity
+              style={[styles.avatarBtn, { backgroundColor: colors.primarySurface, borderColor: colors.primary + '55' }]}
+              onPress={() => router.navigate('/profile')}
+              accessibilityRole="button"
+              accessibilityLabel="Open profile"
+            >
+              {initials
+                ? <Text style={[typography.h4, { color: colors.primaryLight }]}>{initials}</Text>
+                : <Ionicons name="person" size={18} color={colors.primary} />}
+            </TouchableOpacity>
           </View>
         </Animated.View>
         <Animated.View entering={reduceMotion ? undefined : HOME_ENTRANCE.calorie}>
@@ -220,23 +267,35 @@ export default function HomeScreen() {
         {/* ── Today's Meals ────────────────────────────────────── */}
         <SectionHeader title="Today's Meals" subtitle="Tap + to add food" />
 
-        {mealTypes.map(meal => {
+        {mealTypes.map((meal, index) => {
           const items = todayLogs[meal] || [];
           const mealCals = items.reduce((s, i) => s + (i.calories || 0) * (i.quantity || 1), 0);
           return (
             <MealSection
               key={meal}
               meal={meal}
-              icon={mealIcons[meal]}
+              index={index}
               items={items}
               mealCals={mealCals}
               colors={colors}
               onAdd={() => openAddFood(meal)}
               onRemove={(logId) => removeFoodLog(meal, logId)}
+              onEdit={isCustomMeal(meal)
+                ? () => { setMealEditorError(''); setMealEditor({ mode: 'rename', original: meal, value: meal }); }
+                : undefined}
               reduceMotion={reduceMotion}
             />
           );
         })}
+
+        <TouchableOpacity
+          style={[styles.addMealBtn, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
+          onPress={() => { setMealEditorError(''); setMealEditor({ mode: 'add', original: null, value: '' }); }}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="add-circle-outline" size={20} color={colors.primary} />
+          <Text style={[typography.bodyMed, { color: colors.primary, marginLeft: spacing.sm }]}>Add another meal</Text>
+        </TouchableOpacity>
 
         <View style={{ height: 100 }} />
       </ScrollView>
@@ -374,6 +433,46 @@ export default function HomeScreen() {
           />
         </SafeAreaView>
       </Modal>
+
+      {/* ── Meal type editor ─────────────────────────────────── */}
+      <Modal visible={!!mealEditor} transparent animationType="fade">
+        <View style={styles.mealEditorOverlay}>
+          <View style={[styles.mealEditorCard, { backgroundColor: colors.cardElevated, borderColor: colors.cardBorder }]}>
+            <Text style={[typography.h3, { color: colors.text, marginBottom: spacing.md }]}>
+              {mealEditor?.mode === 'rename' ? 'Rename meal' : 'New meal'}
+            </Text>
+            <TextInput
+              style={[styles.mealEditorInput, { color: colors.text, backgroundColor: colors.bgSecondary, borderColor: colors.cardBorder }]}
+              placeholder="e.g. Brunch, Post-workout"
+              placeholderTextColor={colors.textMuted}
+              value={mealEditor?.value || ''}
+              onChangeText={v => setMealEditor(m => (m ? { ...m, value: v } : m))}
+              autoFocus
+              maxLength={24}
+              returnKeyType="done"
+              onSubmitEditing={submitMealEditor}
+            />
+            {mealEditorError ? <Text style={[typography.caption, { color: colors.error, marginTop: spacing.xs }]}>{mealEditorError}</Text> : null}
+            <View style={styles.mealEditorBtns}>
+              <TouchableOpacity style={[styles.mealEditorBtn, { backgroundColor: colors.bgTertiary }]} onPress={() => setMealEditor(null)}>
+                <Text style={[typography.bodyMed, { color: colors.textSecondary }]}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.mealEditorBtn, { backgroundColor: colors.primary }]} onPress={submitMealEditor}>
+                <Text style={[typography.bodyMed, { color: colors.textInverse }]}>Save</Text>
+              </TouchableOpacity>
+            </View>
+            {mealEditor?.mode === 'rename' && (
+              <TouchableOpacity
+                style={styles.mealEditorDelete}
+                onPress={() => { const original = mealEditor.original; setMealEditor(null); confirmDeleteMeal(original); }}
+              >
+                <Ionicons name="trash-outline" size={15} color={colors.error} />
+                <Text style={[typography.bodySmMed, { color: colors.error, marginLeft: 6 }]}>Delete this meal</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -402,13 +501,16 @@ function MacroTile({ label, value, goal, color, colors, reduceMotion }) {
     </Card>
   );
 }
-function MealSection({ meal, icon, items, mealCals, colors, onAdd, onRemove, reduceMotion }) {
+function MealSection({ meal, index = 0, items, mealCals, colors, onAdd, onRemove, onEdit, reduceMotion }) {
   const [expanded, setExpanded] = useState(true);
+  const tint = mealColor(meal, colors);
   return (
     <Animated.View layout={reduceMotion ? undefined : MEAL_LAYOUT}>
     <Card style={styles.mealCard} elevated>
       <TouchableOpacity style={styles.mealHeader} onPress={() => setExpanded(e => !e)} activeOpacity={0.7}>
-        <Text style={{ fontSize: 22 }}>{icon}</Text>
+        <View style={[styles.mealIconBox, { backgroundColor: tint + '22', borderColor: tint + '3a' }]}>
+          <MealGlyph meal={meal} index={index} size={20} />
+        </View>
         <View style={{ flex: 1, marginLeft: spacing.sm }}>
           <Text style={[typography.h4, { color: colors.text }]}>{meal}</Text>
           {items.length > 0 && (
@@ -417,6 +519,16 @@ function MealSection({ meal, icon, items, mealCals, colors, onAdd, onRemove, red
             </Text>
           )}
         </View>
+        {onEdit && (
+          <TouchableOpacity
+            style={styles.mealEditBtn}
+            onPress={onEdit}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            accessibilityLabel={`Edit ${meal}`}
+          >
+            <Ionicons name="create-outline" size={16} color={colors.textMuted} />
+          </TouchableOpacity>
+        )}
         <TouchableOpacity
           style={[styles.addFoodBtn, { backgroundColor: colors.primaryMuted, borderColor: colors.primary + '40' }]}
           onPress={onAdd}
@@ -478,8 +590,13 @@ const styles = StyleSheet.create({
   },
   headerGreeting: { flex: 1, minWidth: 0, marginRight: spacing.sm },
   headerActions: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  headerLogo: { marginRight: spacing.xs },
   headerDate: { marginBottom: 3 },
   headerTitle: { fontSize: 25, fontWeight: '700', letterSpacing: -0.6 },
+  avatarBtn: {
+    width: 40, height: 40, borderRadius: radius.full,
+    alignItems: 'center', justifyContent: 'center', borderWidth: 1,
+  },
   streakBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -525,6 +642,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   mealCard: { marginBottom: spacing.sm },
+  mealIconBox: {
+    width: 42, height: 42, borderRadius: radius.md,
+    alignItems: 'center', justifyContent: 'center', borderWidth: 1,
+  },
+  mealEditBtn: { padding: spacing.xs, marginRight: spacing.xs },
+  addMealBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    padding: spacing.md, borderRadius: radius.lg, borderWidth: 1,
+    borderStyle: 'dashed', marginTop: spacing.xs, marginBottom: spacing.sm,
+  },
+  mealEditorOverlay: {
+    flex: 1, backgroundColor: 'rgba(0,0,0,0.6)',
+    alignItems: 'center', justifyContent: 'center', padding: spacing.lg,
+  },
+  mealEditorCard: { width: '100%', maxWidth: 420, padding: spacing.lg, borderRadius: radius.xl, borderWidth: 1 },
+  mealEditorInput: {
+    borderWidth: 1, borderRadius: radius.md, paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + 4, ...typography.h4, marginBottom: spacing.xs,
+  },
+  mealEditorBtns: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.md },
+  mealEditorBtn: { flex: 1, paddingVertical: spacing.sm + 4, borderRadius: radius.md, alignItems: 'center' },
+  mealEditorDelete: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    marginTop: spacing.md, paddingVertical: spacing.sm,
+  },
   mealHeader: {
     flexDirection: 'row',
     alignItems: 'center',

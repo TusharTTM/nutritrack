@@ -3,11 +3,11 @@ import {
   View, Text, StyleSheet, TouchableOpacity, SafeAreaView,
   StatusBar, TextInput, ScrollView, Platform,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../context/AppContext';
 import { typography, spacing, radius } from '../utils/theme';
 import { calcTDEE, calcMacros } from '../utils/helpers';
+import { LogoMark } from '../components/Logo';
 
 const STEPS = [
   { id: 'welcome' },
@@ -119,12 +119,9 @@ export default function OnboardingScreen() {
         {/* ── WELCOME ─────────────────────────────────────── */}
         {currentStep.id === 'welcome' && (
           <View style={styles.centerContent}>
-            <LinearGradient
-              colors={[colors.primarySurface, colors.bg]}
-              style={styles.welcomeGradient}
-            >
-              <Text style={styles.welcomeEmoji}>🥦</Text>
-            </LinearGradient>
+            <View style={[styles.welcomeGradient, { backgroundColor: colors.primarySurface }]}>
+              <LogoMark size={100} />
+            </View>
             <Text style={[typography.displayMd, { color: colors.text, textAlign: 'center', marginTop: spacing.xl }]}>
               Welcome to{'\n'}
               <Text style={{ color: colors.primaryLight }}>NutriTrack</Text>
@@ -135,13 +132,15 @@ export default function OnboardingScreen() {
             </Text>
             <View style={styles.featureList}>
               {[
-                { icon: '📊', text: 'Track calories & macros' },
-                { icon: '💧', text: 'Monitor hydration' },
-                { icon: '🏃', text: 'Log activities' },
-                { icon: '🎯', text: 'Personalise your daily goals' },
+                { ion: 'stats-chart', c: colors.primary, text: 'Track calories & macros' },
+                { ion: 'water', c: colors.water, text: 'Monitor hydration' },
+                { ion: 'fitness', c: colors.warning, text: 'Log activities' },
+                { ion: 'flag-outline', c: colors.accentPink, text: 'Personalise your daily goals' },
               ].map(f => (
                 <View key={f.text} style={[styles.featureItem, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
-                  <Text style={{ fontSize: 20 }}>{f.icon}</Text>
+                  <View style={[styles.featureIcon, { backgroundColor: f.c + '1f' }]}>
+                    <Ionicons name={f.ion} size={20} color={f.c} />
+                  </View>
                   <Text style={[typography.bodyMed, { color: colors.text }]}>{f.text}</Text>
                 </View>
               ))}
@@ -388,14 +387,17 @@ const styles = StyleSheet.create({
   scroll: { flexGrow: 1, paddingBottom: 100 },
   centerContent: { flex: 1, alignItems: 'center', paddingHorizontal: spacing.lg, paddingTop: spacing.xl * 2 },
   welcomeGradient: {
-    width: 120, height: 120, borderRadius: 60,
+    width: 148, height: 148, borderRadius: 74,
     alignItems: 'center', justifyContent: 'center',
   },
-  welcomeEmoji: { fontSize: 60 },
   featureList: { width: '100%', marginTop: spacing.xl, gap: spacing.sm },
   featureItem: {
     flexDirection: 'row', alignItems: 'center', gap: spacing.md,
     padding: spacing.md, borderRadius: radius.lg, borderWidth: 1,
+  },
+  featureIcon: {
+    width: 40, height: 40, borderRadius: radius.md,
+    alignItems: 'center', justifyContent: 'center',
   },
   stepContent: { paddingHorizontal: spacing.lg, paddingTop: spacing.xl },
   stepEmoji: { fontSize: 52 },

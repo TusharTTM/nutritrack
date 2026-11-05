@@ -33,6 +33,24 @@ Community requires a shared Supabase project. It is disabled until both environm
 
 Community account holders can search by exact display name and send or accept joining requests. Only accepted group members can read shared reports. Each person must enable “Share daily summaries”; turning it off hides and deletes their published summaries. Shared reports contain daily calories, protein, carbs, fat, fiber, and water for up to 30 days. Meal-level logs, weight, and profile details are not shared.
 
+## Accounts & cloud backup (MongoDB, optional)
+
+NutriTrack can offer real sign-up / sign-in and back up your goals and daily
+totals to a MongoDB database. This is optional and off by default.
+
+1. Run the reference API in `server/`: `cd server && cp .env.example .env`, set
+   `MONGODB_URI` (local or MongoDB Atlas) and a random `JWT_SECRET`, then
+   `npm install && npm start`.
+2. Point the app at it by setting `EXPO_PUBLIC_SUPABASE_URL`'s neighbour
+   `EXPO_PUBLIC_MONGODB_API_URL` to the API base URL (see `.env.example`), and
+   restart Expo.
+3. Open **Profile → Account → Sign in or create account**.
+
+When the API URL is set, the Profile shows a "Cloud" badge and accounts are
+stored in MongoDB. When it is not set, the app runs in local-only mode and the
+account stays on the device. See `server/README.md` for the full endpoint list.
+The connection string and `JWT_SECRET` live only on the server, never in the app.
+
 ## Build checks
 
 - npm run lint
