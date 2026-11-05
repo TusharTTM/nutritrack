@@ -13,7 +13,7 @@ import CalorieRing from '../components/CalorieRing';
 import Card from '../components/Card';
 import SectionHeader from '../components/SectionHeader';
 import EmptyState from '../components/EmptyState';
-import { typography, spacing, radius } from '../utils/theme';
+import { gradients, typography, spacing, radius } from '../utils/theme';
 import { foodDatabase } from '../data/foods';
 import { getGreeting, mlToDisplay, pct } from '../utils/helpers';
 import MealGlyph, { mealColor } from '../components/MealGlyph';
@@ -130,6 +130,13 @@ export default function HomeScreen() {
           end={{ x: 0.15, y: 1 }}
           style={StyleSheet.absoluteFillObject}
         />
+        <LinearGradient
+          pointerEvents="none"
+          colors={[colors.primary + '33', colors.primary + '00']}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+          style={styles.topGlow}
+        />
         <Animated.View style={styles.header} entering={reduceMotion ? undefined : HOME_ENTRANCE.header}>
           <View style={styles.headerLogo}>
             <LogoMark size={44} />
@@ -159,6 +166,13 @@ export default function HomeScreen() {
         </Animated.View>
         <Animated.View entering={reduceMotion ? undefined : HOME_ENTRANCE.calorie}>
         <Card style={styles.calorieCard} elevated>
+          <LinearGradient
+            pointerEvents="none"
+            colors={gradients.brandSoft}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={StyleSheet.absoluteFillObject}
+          />
           <View style={styles.cardTitleRow}>
             <View>
               <Text style={[typography.h3, { color: colors.text }]}>Daily calories</Text>
@@ -586,6 +600,7 @@ function MealSection({ meal, index = 0, items, mealCals, colors, onAdd, onRemove
 const styles = StyleSheet.create({
   safe: { flex: 1, minWidth: 0, width: '100%' },
   scroll: { paddingHorizontal: spacing.md, paddingTop: spacing.md, paddingBottom: spacing.lg },
+  topGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 280 },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
