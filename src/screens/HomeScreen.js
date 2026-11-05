@@ -15,7 +15,7 @@ import CalorieRing from '../components/CalorieRing';
 import Card from '../components/Card';
 import SectionHeader from '../components/SectionHeader';
 import EmptyState from '../components/EmptyState';
-import { gradients, typography, spacing, radius } from '../utils/theme';
+import { gradients, ctaGradient, typography, spacing, radius } from '../utils/theme';
 import { foodDatabase } from '../data/foods';
 import { getGreeting, mlToDisplay, pct } from '../utils/helpers';
 import MealGlyph, { mealColor } from '../components/MealGlyph';
@@ -119,7 +119,6 @@ export default function HomeScreen() {
     : '';
 
   const greeting = getGreeting(profile.name);
-  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
   // Scroll-linked header parallax (fades + lifts as you scroll).
   const scrollY = useSharedValue(0);
@@ -153,16 +152,10 @@ export default function HomeScreen() {
         />
         <AuroraBackground />
 
-        {/* ── Header ─────────────────────────────────────────── */}
+        {/* ── Top bar ────────────────────────────────────────── */}
         <Animated.View entering={enter('header')}>
-          <Animated.View style={[styles.header, headerAnim]}>
-            <View style={styles.headerLogo}>
-              <LogoMark size={46} />
-            </View>
-            <View style={styles.headerGreeting}>
-              <Text numberOfLines={1} style={[typography.caption, styles.headerDate, { color: colors.textMuted }]}>{today}</Text>
-              <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.headerTitle, { color: colors.text }]}>{greeting}</Text>
-            </View>
+          <Animated.View style={[styles.topBar, headerAnim]}>
+            <LogoMark size={42} />
             <View style={styles.headerActions}>
               {streak > 0 && (
                 <View style={[styles.streakBadge, { backgroundColor: colors.primarySurface, borderColor: colors.cardBorder }]}>
@@ -182,6 +175,18 @@ export default function HomeScreen() {
               </TouchableOpacity>
             </View>
           </Animated.View>
+        </Animated.View>
+
+        {/* ── Editorial hero ─────────────────────────────────── */}
+        <Animated.View entering={enter('header')}>
+          <HeroBanner
+            greeting={greeting}
+            streak={streak}
+            onLogMeal={() => openAddFood('Breakfast')}
+            onProgress={() => router.navigate('/progress')}
+            colors={colors}
+            theme={theme}
+          />
         </Animated.View>
 
         {/* ── Dashboard (responsive) ─────────────────────────── */}
@@ -445,6 +450,64 @@ function PressScale({ children, onPress, style, to = 0.95, accessibilityLabel })
   );
 }
 
+// ── Editorial hero ─────────────────────────────────────────────────────────
+function HeroBanner({ greeting, streak, onLogMeal, onProgress, colors, theme }) {
+  const { width } = useWindowDimensions();
+  const heroSize = Math.max(38, Math.min(52, Math.round(width * 0.115)));
+  const titleLine = { fontSize: heroSize, lineHeight: heroSize * 1.03 };
+  return (
+    <View style={styles.hero}>
+      {/* glow orb + organic deco */}
+      <View style={styles.heroGlowWrap} pointerEvents="none">
+        <LinearGradient
+          colors={[colors.primary + '5c', colors.primary + '00']}
+          start={{ x: 0.5, y: 0.12 }}
+          end={{ x: 0.5, y: 1 }}
+          style={styles.heroGlow}
+        />
+      </View>
+      <View style={[styles.decoRing, { borderColor: colors.primary + '26' }]} pointerEvents="none" />
+      <View style={[styles.decoRing2, { borderColor: colors.accent + '22' }]} pointerEvents="none" />
+
+      <View style={styles.heroEyebrow}>
+        {streak > 0 && <Ionicons name="flame" size={14} color={colors.primary} />}
+        <Text style={[styles.heroEyebrowText, { color: colors.primary }]} numberOfLines={1}>
+          {(greeting || 'Welcome').toUpperCase()}
+        </Text>
+      </View>
+
+      <Text style={[styles.heroTitle, titleLine, { color: colors.text }]}>Eat Better.</Text>
+      <Text style={[styles.heroTitle, titleLine, { color: colors.primary }]}>Live Healthier.</Text>
+
+      <Text style={[typography.body, styles.heroSub, { color: colors.textSecondary }]}>
+        Track meals, macros, water and habits — all in one calm, beautiful place.
+      </Text>
+
+      <View style={styles.heroCtas}>
+        <PressScale onPress={onLogMeal} style={styles.heroCtaPrimary} accessibilityLabel="Log a meal">
+          <LinearGradient
+            colors={ctaGradient(theme)}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.heroCtaPrimaryFill}
+          >
+            <Ionicons name="add-circle" size={19} color={colors.textInverse} />
+            <Text style={[typography.bodyMed, { color: colors.textInverse, marginLeft: 7 }]}>Log a meal</Text>
+          </LinearGradient>
+        </PressScale>
+        <PressScale
+          onPress={onProgress}
+          style={[styles.heroCtaSecondary, { borderColor: colors.cardBorder, backgroundColor: colors.card }]}
+          accessibilityLabel="View progress"
+        >
+          <Text style={[typography.bodyMed, { color: colors.text }]}>View progress</Text>
+          <Ionicons name="arrow-forward" size={16} color={colors.text} style={{ marginLeft: 6 }} />
+        </PressScale>
+      </View>
+    </View>
+  );
+}
+
 // ── Hero calorie card ──────────────────────────────────────────────────────
 function CalorieHero({ totals, goals, burned, ringSize, colors }) {
   return (
@@ -665,17 +728,27 @@ function MealSection({ meal, index = 0, items, mealCals, colors, onAdd, onRemove
 const styles = StyleSheet.create({
   safe: { flex: 1, minWidth: 0, width: '100%' },
   scroll: { paddingHorizontal: spacing.md, paddingTop: spacing.md, paddingBottom: spacing.lg },
-  header: {
+  topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.lg,
+    marginBottom: spacing.md,
   },
-  headerGreeting: { flex: 1, minWidth: 0, marginRight: spacing.sm },
   headerActions: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  headerLogo: { marginRight: spacing.xs },
-  headerDate: { marginBottom: 3 },
-  headerTitle: { fontSize: 26, fontWeight: '800', letterSpacing: -0.7 },
+  // Editorial hero
+  hero: { alignItems: 'center', marginBottom: spacing.lg, paddingTop: spacing.xs },
+  heroGlowWrap: { position: 'absolute', top: -70, left: 0, right: 0, alignItems: 'center' },
+  heroGlow: { width: 620, height: 620, borderRadius: 310 },
+  decoRing: { position: 'absolute', top: 6, right: -34, width: 150, height: 150, borderRadius: 75, borderWidth: 13, opacity: 0.6 },
+  decoRing2: { position: 'absolute', top: 130, left: -44, width: 92, height: 92, borderRadius: 46, borderWidth: 10, opacity: 0.5 },
+  heroEyebrow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: spacing.sm },
+  heroEyebrowText: { letterSpacing: 2.4, fontSize: 12, fontWeight: '700' },
+  heroTitle: { fontWeight: '800', letterSpacing: -1.4, textAlign: 'center' },
+  heroSub: { marginTop: spacing.sm, maxWidth: 460, textAlign: 'center' },
+  heroCtas: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing.sm, marginTop: spacing.lg },
+  heroCtaPrimary: { borderRadius: radius.full, overflow: 'hidden' },
+  heroCtaPrimaryFill: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.lg, paddingVertical: spacing.sm + 5, borderRadius: radius.full },
+  heroCtaSecondary: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.lg, paddingVertical: spacing.sm + 5, borderRadius: radius.full, borderWidth: 1 },
   avatarBtn: {
     width: 42, height: 42, borderRadius: radius.full,
     alignItems: 'center', justifyContent: 'center', borderWidth: 1,
