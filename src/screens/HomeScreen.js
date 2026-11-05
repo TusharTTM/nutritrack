@@ -15,7 +15,7 @@ import CalorieRing from '../components/CalorieRing';
 import Card from '../components/Card';
 import SectionHeader from '../components/SectionHeader';
 import EmptyState from '../components/EmptyState';
-import { gradients, ctaGradient, typography, spacing, radius } from '../utils/theme';
+import { gradients, typography, spacing, radius } from '../utils/theme';
 import { foodDatabase } from '../data/foods';
 import { getGreeting, mlToDisplay, pct } from '../utils/helpers';
 import MealGlyph, { mealColor } from '../components/MealGlyph';
@@ -184,8 +184,6 @@ export default function HomeScreen() {
             streak={streak}
             onLogMeal={() => openAddFood('Breakfast')}
             onProgress={() => router.navigate('/progress')}
-            colors={colors}
-            theme={theme}
           />
         </Animated.View>
 
@@ -450,58 +448,65 @@ function PressScale({ children, onPress, style, to = 0.95, accessibilityLabel })
   );
 }
 
-// ── Editorial hero ─────────────────────────────────────────────────────────
-function HeroBanner({ greeting, streak, onLogMeal, onProgress, colors, theme }) {
+// ── Editorial hero (dark ink panel + vivid lime) ───────────────────────────
+const HERO = { ink: '#0E100B', ink2: '#161A10', lime: '#C6F24E', paper: '#F2F4EC', sub: '#B9C0AC', teal: '#4FD6C6' };
+function HeroBanner({ greeting, streak, onLogMeal, onProgress }) {
   const { width } = useWindowDimensions();
   const heroSize = Math.max(38, Math.min(52, Math.round(width * 0.115)));
   const titleLine = { fontSize: heroSize, lineHeight: heroSize * 1.03 };
   return (
     <View style={styles.hero}>
-      {/* glow orb + organic deco */}
+      <LinearGradient
+        pointerEvents="none"
+        colors={[HERO.ink, HERO.ink2]}
+        start={{ x: 0.2, y: 0 }}
+        end={{ x: 0.8, y: 1 }}
+        style={StyleSheet.absoluteFillObject}
+      />
       <View style={styles.heroGlowWrap} pointerEvents="none">
         <LinearGradient
-          colors={[colors.primary + '5c', colors.primary + '00']}
-          start={{ x: 0.5, y: 0.12 }}
+          colors={[HERO.lime + '6b', HERO.lime + '00']}
+          start={{ x: 0.5, y: 0.1 }}
           end={{ x: 0.5, y: 1 }}
           style={styles.heroGlow}
         />
       </View>
-      <View style={[styles.decoRing, { borderColor: colors.primary + '26' }]} pointerEvents="none" />
-      <View style={[styles.decoRing2, { borderColor: colors.accent + '22' }]} pointerEvents="none" />
+      <View style={[styles.decoRing, { borderColor: HERO.lime + '2e' }]} pointerEvents="none" />
+      <View style={[styles.decoRing2, { borderColor: HERO.teal + '33' }]} pointerEvents="none" />
 
       <View style={styles.heroEyebrow}>
-        {streak > 0 && <Ionicons name="flame" size={14} color={colors.primary} />}
-        <Text style={[styles.heroEyebrowText, { color: colors.primary }]} numberOfLines={1}>
+        {streak > 0 && <Ionicons name="flame" size={14} color={HERO.lime} />}
+        <Text style={[styles.heroEyebrowText, { color: HERO.lime }]} numberOfLines={1}>
           {(greeting || 'Welcome').toUpperCase()}
         </Text>
       </View>
 
-      <Text style={[styles.heroTitle, titleLine, { color: colors.text }]}>Eat Better.</Text>
-      <Text style={[styles.heroTitle, titleLine, { color: colors.primary }]}>Live Healthier.</Text>
+      <Text style={[styles.heroTitle, titleLine, { color: HERO.paper }]}>Eat Better.</Text>
+      <Text style={[styles.heroTitle, titleLine, { color: HERO.lime }]}>Live Healthier.</Text>
 
-      <Text style={[typography.body, styles.heroSub, { color: colors.textSecondary }]}>
+      <Text style={[typography.body, styles.heroSub, { color: HERO.sub }]}>
         Track meals, macros, water and habits — all in one calm, beautiful place.
       </Text>
 
       <View style={styles.heroCtas}>
         <PressScale onPress={onLogMeal} style={styles.heroCtaPrimary} accessibilityLabel="Log a meal">
           <LinearGradient
-            colors={ctaGradient(theme)}
+            colors={['#D4F75E', '#A8D62E']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.heroCtaPrimaryFill}
           >
-            <Ionicons name="add-circle" size={19} color={colors.textInverse} />
-            <Text style={[typography.bodyMed, { color: colors.textInverse, marginLeft: 7 }]}>Log a meal</Text>
+            <Ionicons name="add-circle" size={19} color={HERO.ink} />
+            <Text style={[typography.bodyMed, { color: HERO.ink, marginLeft: 7 }]}>Log a meal</Text>
           </LinearGradient>
         </PressScale>
         <PressScale
           onPress={onProgress}
-          style={[styles.heroCtaSecondary, { borderColor: colors.cardBorder, backgroundColor: colors.card }]}
+          style={[styles.heroCtaSecondary, { borderColor: HERO.lime + '59', backgroundColor: HERO.lime + '14' }]}
           accessibilityLabel="View progress"
         >
-          <Text style={[typography.bodyMed, { color: colors.text }]}>View progress</Text>
-          <Ionicons name="arrow-forward" size={16} color={colors.text} style={{ marginLeft: 6 }} />
+          <Text style={[typography.bodyMed, { color: HERO.lime }]}>View progress</Text>
+          <Ionicons name="arrow-forward" size={16} color={HERO.lime} style={{ marginLeft: 6 }} />
         </PressScale>
       </View>
     </View>
@@ -736,8 +741,12 @@ const styles = StyleSheet.create({
   },
   headerActions: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   // Editorial hero
-  hero: { alignItems: 'center', marginBottom: spacing.lg, paddingTop: spacing.xs },
-  heroGlowWrap: { position: 'absolute', top: -70, left: 0, right: 0, alignItems: 'center' },
+  hero: {
+    backgroundColor: HERO.ink, borderRadius: radius.xl, borderWidth: 1,
+    borderColor: 'rgba(198, 242, 78, 0.16)', paddingVertical: spacing.xl,
+    paddingHorizontal: spacing.lg, alignItems: 'center', marginBottom: spacing.lg, overflow: 'hidden',
+  },
+  heroGlowWrap: { position: 'absolute', top: -40, left: 0, right: 0, alignItems: 'center' },
   heroGlow: { width: 620, height: 620, borderRadius: 310 },
   decoRing: { position: 'absolute', top: 6, right: -34, width: 150, height: 150, borderRadius: 75, borderWidth: 13, opacity: 0.6 },
   decoRing2: { position: 'absolute', top: 130, left: -44, width: 92, height: 92, borderRadius: 46, borderWidth: 10, opacity: 0.5 },

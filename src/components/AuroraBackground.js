@@ -51,16 +51,16 @@ export default function AuroraBackground({ intensity = 1 }) {
   const dark = theme === 'dark';
   const blobs = dark
     ? [
-        { color: '#FF5A3C', top: -height * 0.12, left: -width * 0.25, size: 420, opacity: 0.5 * intensity, duration: 11000, phase: 0 },
-        { color: '#F5A04A', top: height * 0.12, right: -width * 0.3, size: 380, opacity: 0.42 * intensity, duration: 13500, phase: 0.3 },
-        { color: '#FF6B8F', bottom: -height * 0.1, left: -width * 0.1, size: 460, opacity: 0.36 * intensity, duration: 15000, phase: 0.6 },
-        { color: '#FF8A63', bottom: height * 0.28, right: -width * 0.2, size: 300, opacity: 0.3 * intensity, duration: 12000, phase: 0.85 },
+        { color: '#9FD62E', top: -height * 0.12, left: -width * 0.25, size: 420, opacity: 0.42 * intensity, duration: 11000, phase: 0 },
+        { color: '#4FD6C6', top: height * 0.12, right: -width * 0.3, size: 380, opacity: 0.36 * intensity, duration: 13500, phase: 0.3 },
+        { color: '#C6F24E', bottom: -height * 0.1, left: -width * 0.1, size: 460, opacity: 0.32 * intensity, duration: 15000, phase: 0.6 },
+        { color: '#7CB82A', bottom: height * 0.28, right: -width * 0.2, size: 300, opacity: 0.28 * intensity, duration: 12000, phase: 0.85 },
       ]
     : [
-        { color: '#FFB59A', top: -height * 0.14, left: -width * 0.25, size: 440, opacity: 0.62 * intensity, duration: 11000, phase: 0 },
-        { color: '#FFD48A', top: height * 0.1, right: -width * 0.3, size: 400, opacity: 0.6 * intensity, duration: 13500, phase: 0.3 },
-        { color: '#FFAEBE', bottom: -height * 0.1, left: -width * 0.12, size: 460, opacity: 0.5 * intensity, duration: 15000, phase: 0.6 },
-        { color: '#FFC38A', bottom: height * 0.3, right: -width * 0.22, size: 320, opacity: 0.45 * intensity, duration: 12000, phase: 0.85 },
+        { color: '#DCF58A', top: -height * 0.14, left: -width * 0.25, size: 440, opacity: 0.6 * intensity, duration: 11000, phase: 0 },
+        { color: '#B6E7C4', top: height * 0.1, right: -width * 0.3, size: 400, opacity: 0.55 * intensity, duration: 13500, phase: 0.3 },
+        { color: '#EAF7A8', bottom: -height * 0.1, left: -width * 0.12, size: 460, opacity: 0.5 * intensity, duration: 15000, phase: 0.6 },
+        { color: '#C6ECA0', bottom: height * 0.3, right: -width * 0.22, size: 320, opacity: 0.45 * intensity, duration: 12000, phase: 0.85 },
       ];
   return (
     <Animated.View style={StyleSheet.absoluteFillObject} pointerEvents="none">
