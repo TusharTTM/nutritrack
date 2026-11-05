@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, interpolate } from 'react-native-reanimated';
 import { useApp } from '../../context/AppContext';
 import { ctaGradient, shadow } from '../../utils/theme';
 
@@ -11,6 +12,24 @@ const TAB_ICONS = {
   progress: ['stats-chart', 'stats-chart-outline'], activity: ['fitness', 'fitness-outline'],
   profile: ['person', 'person-outline'],
 };
+
+function TabIcon({ focused, color, activeIcon, inactiveIcon, grad, textInverse }) {
+  const pop = useSharedValue(focused ? 1 : 0);
+  useEffect(() => { pop.value = withSpring(focused ? 1 : 0, { damping: 13, stiffness: 240 }); }, [focused, pop]);
+  const fillAnim = useAnimatedStyle(() => ({
+    opacity: pop.value,
+    transform: [{ scale: interpolate(pop.value, [0, 1], [0.8, 1]) }],
+  }));
+  return (
+    <View style={styles.iconPill}>
+      <Ionicons name={inactiveIcon} size={20} color={color} />
+      <Animated.View style={[StyleSheet.absoluteFillObject, styles.pillFill, fillAnim]}>
+        <LinearGradient colors={grad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[StyleSheet.absoluteFillObject, { borderRadius: 12 }]} />
+        <Ionicons name={activeIcon} size={20} color={textInverse} />
+      </Animated.View>
+    </View>
+  );
+}
 
 export default function TabLayout() {
   const { colors, theme } = useApp();
@@ -25,23 +44,15 @@ export default function TabLayout() {
       tabBarItemStyle: styles.tabItem,
       tabBarIcon: ({ focused, color }) => {
         const [active, inactive] = TAB_ICONS[route.name] || ['ellipse', 'ellipse-outline'];
-        if (focused) {
-          return (
-            <View style={styles.iconPillActive}>
-              <LinearGradient
-                colors={activeGrad}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={[StyleSheet.absoluteFillObject, { borderRadius: 12 }]}
-              />
-              <Ionicons name={active} size={20} color={colors.textInverse} />
-            </View>
-          );
-        }
         return (
-          <View style={styles.iconPill}>
-            <Ionicons name={inactive} size={20} color={color} />
-          </View>
+          <TabIcon
+            focused={focused}
+            color={color}
+            activeIcon={active}
+            inactiveIcon={inactive}
+            grad={activeGrad}
+            textInverse={colors.textInverse}
+          />
         );
       },
     })}
@@ -69,11 +80,8 @@ const styles = StyleSheet.create({
   },
   tabItem: { minWidth: 0, marginHorizontal: 2, borderRadius: 16 },
   iconPill: {
-    width: 36, height: 30, alignItems: 'center', justifyContent: 'center', borderRadius: 12,
+    width: 38, height: 30, alignItems: 'center', justifyContent: 'center', borderRadius: 12,
   },
-  iconPillActive: {
-    width: 38, height: 30, alignItems: 'center', justifyContent: 'center',
-    borderRadius: 12, overflow: 'hidden',
-  },
+  pillFill: { alignItems: 'center', justifyContent: 'center', borderRadius: 12, overflow: 'hidden' },
   tabLabel: { fontSize: 11, fontWeight: '600' },
 });

@@ -12,7 +12,7 @@ function RootNavigator() {
   return (
     <>
       <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
+      <Stack screenOptions={{ headerShown: false, animation: 'fade', contentStyle: { backgroundColor: colors.bg } }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="community/[userId]" />

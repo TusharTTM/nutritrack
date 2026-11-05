@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, Pressable,
   SafeAreaView, StatusBar, Modal, TextInput, FlatList, useWindowDimensions, Alert,
@@ -9,6 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
   FadeIn, FadeInDown, FadeOut, LinearTransition, useReducedMotion,
   useSharedValue, useAnimatedStyle, useAnimatedScrollHandler, interpolate,
+  withRepeat, withTiming, withSpring, Easing,
 } from 'react-native-reanimated';
 import { useApp } from '../context/AppContext';
 import CalorieRing from '../components/CalorieRing';
@@ -293,18 +294,24 @@ export default function HomeScreen() {
 
           <Animated.ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.catRow}>
             {categories.map(cat => (
-              <TouchableOpacity
+              <Pressable
                 key={cat}
-                style={[styles.catPill, {
-                  backgroundColor: activeCategory === cat ? colors.primary : colors.card,
-                  borderColor: activeCategory === cat ? colors.primary : colors.cardBorder,
-                }]}
+                style={({ hovered }) => [
+                  styles.catPill,
+                  {
+                    backgroundColor: activeCategory === cat ? colors.primary : colors.card,
+                    borderColor: activeCategory === cat
+                      ? colors.primary
+                      : hovered ? colors.primary + '66' : colors.cardBorder,
+                  },
+                  hovered && activeCategory !== cat && { transform: [{ translateY: -1 }] },
+                ]}
                 onPress={() => setActiveCategory(cat)}
               >
                 <Text style={[typography.micro, { color: activeCategory === cat ? colors.textInverse : colors.textSecondary }]}>
                   {cat}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             ))}
           </Animated.ScrollView>
 
@@ -366,11 +373,17 @@ export default function HomeScreen() {
             keyExtractor={item => item.id}
             keyboardShouldPersistTaps="handled"
             renderItem={({ item }) => (
-              <TouchableOpacity
-                style={[styles.foodRow, {
-                  backgroundColor: selectedFood?.id === item.id ? colors.primarySurface : 'transparent',
-                  borderBottomColor: colors.cardBorder,
-                }]}
+              <Pressable
+                style={({ hovered, pressed }) => [
+                  styles.foodRow,
+                  {
+                    backgroundColor: selectedFood?.id === item.id
+                      ? colors.primarySurface
+                      : hovered ? colors.cardBorder : 'transparent',
+                    borderBottomColor: colors.cardBorder,
+                  },
+                  pressed && { opacity: 0.85 },
+                ]}
                 onPress={() => setSelectedFood(item)}
               >
                 <View style={{ flex: 1 }}>
@@ -382,7 +395,7 @@ export default function HomeScreen() {
                   <Text style={[typography.micro, { color: colors.textMuted }]}>kcal</Text>
                 </View>
                 {isFavorite(item.id) && <Ionicons name="heart" size={12} color="#FF6B9D" style={{ marginLeft: 6 }} />}
-              </TouchableOpacity>
+              </Pressable>
             )}
             ListEmptyComponent={
               <EmptyState icon="search-outline" title="No foods found" subtitle="Try a different search term" />
@@ -448,12 +461,66 @@ function PressScale({ children, onPress, style, to = 0.95, accessibilityLabel })
   );
 }
 
+// ── Hover + press interaction (web hover lift, springy press) ──────────────
+function Hoverable({ children, style, onPress, accessibilityLabel, lift = -4, scale = 1.02, activeScale = 0.99 }) {
+  const [hover, setHover] = useState(false);
+  const [press, setPress] = useState(false);
+  const h = useSharedValue(0);
+  const p = useSharedValue(1);
+  useEffect(() => { h.value = withTiming(hover ? 1 : 0, { duration: 180, easing: Easing.out(Easing.cubic) }); }, [hover, h]);
+  useEffect(() => { p.value = withSpring(press ? activeScale : 1, { damping: 16, stiffness: 280 }); }, [press, p, activeScale]);
+  const anim = useAnimatedStyle(() => ({
+    transform: [
+      { translateY: interpolate(h.value, [0, 1], [0, lift]) },
+      { scale: interpolate(h.value, [0, 1], [1, scale]) * p.value },
+    ],
+  }));
+  return (
+    <Pressable
+      onPress={onPress}
+      onHoverIn={() => setHover(true)}
+      onHoverOut={() => setHover(false)}
+      onPressIn={() => setPress(true)}
+      onPressOut={() => setPress(false)}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityRole={onPress ? 'button' : 'none'}
+      style={{ alignSelf: 'stretch' }}
+    >
+      <Animated.View style={[anim, style]}>{children}</Animated.View>
+    </Pressable>
+  );
+}
+
 // ── Editorial hero (dark ink panel + vivid lime) ───────────────────────────
 const HERO = { ink: '#0E100B', ink2: '#161A10', lime: '#C6F24E', paper: '#F2F4EC', sub: '#B9C0AC', teal: '#4FD6C6' };
 function HeroBanner({ greeting, streak, onLogMeal, onProgress }) {
   const { width } = useWindowDimensions();
   const heroSize = Math.max(38, Math.min(52, Math.round(width * 0.115)));
   const titleLine = { fontSize: heroSize, lineHeight: heroSize * 1.03 };
+
+  // Ambient loops: pulsing glow, floating deco ring, CTA shimmer sweep.
+  const pulse = useSharedValue(0);
+  const float = useSharedValue(0);
+  const shimmer = useSharedValue(0);
+  useEffect(() => {
+    pulse.value = withRepeat(withTiming(1, { duration: 4200, easing: Easing.inOut(Easing.ease) }), -1, true);
+    float.value = withRepeat(withTiming(1, { duration: 6500, easing: Easing.inOut(Easing.ease) }), -1, true);
+    shimmer.value = withRepeat(withTiming(1, { duration: 2600, easing: Easing.linear }), -1, false);
+  }, [pulse, float, shimmer]);
+  const glowAnim = useAnimatedStyle(() => ({
+    transform: [{ scale: interpolate(pulse.value, [0, 1], [1, 1.12]) }],
+    opacity: interpolate(pulse.value, [0, 1], [0.82, 1]),
+  }));
+  const ringAnim = useAnimatedStyle(() => ({
+    transform: [
+      { translateY: interpolate(float.value, [0, 1], [0, 12]) },
+      { rotate: interpolate(float.value, [0, 1], ['0deg', '12deg']) },
+    ],
+  }));
+  const shimmerAnim = useAnimatedStyle(() => ({
+    transform: [{ translateX: interpolate(shimmer.value, [0, 1], [-170, 280]) }, { rotate: '18deg' }],
+  }));
+
   return (
     <View style={styles.hero}>
       <LinearGradient
@@ -463,15 +530,15 @@ function HeroBanner({ greeting, streak, onLogMeal, onProgress }) {
         end={{ x: 0.8, y: 1 }}
         style={StyleSheet.absoluteFillObject}
       />
-      <View style={styles.heroGlowWrap} pointerEvents="none">
+      <Animated.View style={[styles.heroGlowWrap, glowAnim]} pointerEvents="none">
         <LinearGradient
           colors={[HERO.lime + '6b', HERO.lime + '00']}
           start={{ x: 0.5, y: 0.1 }}
           end={{ x: 0.5, y: 1 }}
           style={styles.heroGlow}
         />
-      </View>
-      <View style={[styles.decoRing, { borderColor: HERO.lime + '2e' }]} pointerEvents="none" />
+      </Animated.View>
+      <Animated.View style={[styles.decoRing, { borderColor: HERO.lime + '2e' }, ringAnim]} pointerEvents="none" />
       <View style={[styles.decoRing2, { borderColor: HERO.teal + '33' }]} pointerEvents="none" />
 
       <View style={styles.heroEyebrow}>
@@ -489,25 +556,35 @@ function HeroBanner({ greeting, streak, onLogMeal, onProgress }) {
       </Text>
 
       <View style={styles.heroCtas}>
-        <PressScale onPress={onLogMeal} style={styles.heroCtaPrimary} accessibilityLabel="Log a meal">
+        <Hoverable onPress={onLogMeal} style={styles.heroCtaPrimary} accessibilityLabel="Log a meal" lift={-3} scale={1.03}>
           <LinearGradient
             colors={['#D4F75E', '#A8D62E']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.heroCtaPrimaryFill}
           >
+            <Animated.View pointerEvents="none" style={[styles.heroShimmer, shimmerAnim]}>
+              <LinearGradient
+                colors={['rgba(255,255,255,0)', 'rgba(255,255,255,0.5)', 'rgba(255,255,255,0)']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={StyleSheet.absoluteFillObject}
+              />
+            </Animated.View>
             <Ionicons name="add-circle" size={19} color={HERO.ink} />
             <Text style={[typography.bodyMed, { color: HERO.ink, marginLeft: 7 }]}>Log a meal</Text>
           </LinearGradient>
-        </PressScale>
-        <PressScale
+        </Hoverable>
+        <Hoverable
           onPress={onProgress}
           style={[styles.heroCtaSecondary, { borderColor: HERO.lime + '59', backgroundColor: HERO.lime + '14' }]}
           accessibilityLabel="View progress"
+          lift={-3}
+          scale={1.03}
         >
           <Text style={[typography.bodyMed, { color: HERO.lime }]}>View progress</Text>
           <Ionicons name="arrow-forward" size={16} color={HERO.lime} style={{ marginLeft: 6 }} />
-        </PressScale>
+        </Hoverable>
       </View>
     </View>
   );
@@ -656,6 +733,7 @@ function MealSection({ meal, index = 0, items, mealCals, colors, onAdd, onRemove
   const tint = mealColor(meal, colors);
   return (
     <Animated.View layout={reduceMotion ? undefined : MEAL_LAYOUT}>
+      <Hoverable>
       <Card style={styles.mealCard} elevated>
         <TouchableOpacity style={styles.mealHeader} onPress={() => setExpanded(e => !e)} activeOpacity={0.7}>
           <View style={[styles.mealIconBox, { backgroundColor: tint + '22', borderColor: tint + '3a' }]}>
@@ -726,6 +804,7 @@ function MealSection({ meal, index = 0, items, mealCals, colors, onAdd, onRemove
           </Animated.View>
         )}
       </Card>
+      </Hoverable>
     </Animated.View>
   );
 }
@@ -758,6 +837,7 @@ const styles = StyleSheet.create({
   heroCtaPrimary: { borderRadius: radius.full, overflow: 'hidden' },
   heroCtaPrimaryFill: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.lg, paddingVertical: spacing.sm + 5, borderRadius: radius.full },
   heroCtaSecondary: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.lg, paddingVertical: spacing.sm + 5, borderRadius: radius.full, borderWidth: 1 },
+  heroShimmer: { position: 'absolute', top: -14, bottom: -14, left: 0, width: 40 },
   avatarBtn: {
     width: 42, height: 42, borderRadius: radius.full,
     alignItems: 'center', justifyContent: 'center', borderWidth: 1,
