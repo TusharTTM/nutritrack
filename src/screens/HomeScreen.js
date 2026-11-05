@@ -18,6 +18,7 @@ import { foodDatabase } from '../data/foods';
 import { getGreeting, mlToDisplay, pct } from '../utils/helpers';
 import MealGlyph, { mealColor } from '../components/MealGlyph';
 import { LogoMark } from '../components/Logo';
+import DailyInsight from '../components/DailyInsight';
 
 const HOME_ENTRANCE = {
   header: FadeInDown.duration(300),
@@ -264,6 +265,9 @@ export default function HomeScreen() {
         </View>
 
         </Animated.View>
+
+        <DailyInsight totals={totals} goals={goals} waterMl={waterMl} />
+
         {/* ── Today's Meals ────────────────────────────────────── */}
         <SectionHeader title="Today's Meals" subtitle="Tap + to add food" />
 

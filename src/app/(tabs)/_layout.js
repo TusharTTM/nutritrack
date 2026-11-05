@@ -4,7 +4,7 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useApp } from '../../context/AppContext';
-import { gradients, shadow } from '../../utils/theme';
+import { ctaGradient, shadow } from '../../utils/theme';
 
 const TAB_ICONS = {
   index: ['home', 'home-outline'], nutrition: ['restaurant', 'restaurant-outline'],
@@ -13,7 +13,8 @@ const TAB_ICONS = {
 };
 
 export default function TabLayout() {
-  const { colors } = useApp();
+  const { colors, theme } = useApp();
+  const activeGrad = ctaGradient(theme);
   return (
     <Tabs screenOptions={({ route }) => ({
       headerShown: false,
@@ -28,7 +29,7 @@ export default function TabLayout() {
           return (
             <View style={styles.iconPillActive}>
               <LinearGradient
-                colors={gradients.brand}
+                colors={activeGrad}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={[StyleSheet.absoluteFillObject, { borderRadius: 12 }]}

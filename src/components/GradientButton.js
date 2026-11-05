@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-nat
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../context/AppContext';
-import { gradients, radius, spacing, shadow, typography } from '../utils/theme';
+import { ctaGradient, radius, spacing, shadow, typography } from '../utils/theme';
 
 /**
  * Primary call-to-action with the NutriTrack brand gradient. Falls back to a
@@ -13,7 +13,8 @@ export default function GradientButton({
   label, onPress, disabled = false, loading = false, icon, iconPosition = 'right',
   size = 'lg', full = true, style, textStyle, accessibilityLabel,
 }) {
-  const { colors } = useApp();
+  const { colors, theme } = useApp();
+  const grad = ctaGradient(theme);
   const pad = size === 'lg' ? spacing.md + 4 : spacing.sm + 6;
   const fontSize = size === 'lg' ? typography.h4.fontSize : typography.bodyMed.fontSize;
 
@@ -53,7 +54,7 @@ export default function GradientButton({
       style={[styles.btn, { paddingVertical: pad, borderRadius: radius.xl }, full && styles.full, shadow.md, style]}
     >
       <LinearGradient
-        colors={gradients.brandStrong}
+        colors={grad}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={StyleSheet.absoluteFillObject}

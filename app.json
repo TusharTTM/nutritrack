@@ -29,8 +29,8 @@
       "shortName": "NutriTrack",
       "lang": "en",
       "description": "Track meals, nutrition, activity, and progress.",
-      "themeColor": "#0FA05B",
-      "backgroundColor": "#EDF6F0"
+      "themeColor": "#0C7D6B",
+      "backgroundColor": "#F1EFE8"
     },
     "experiments": {
       "baseUrl": "/nutritrack"
