@@ -4,9 +4,8 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppProvider, useApp } from '../context/AppContext';
-import { shadow } from '../utils/theme';
 
-const FRAME_MAX = 520;
+const CONTENT_MAX = 1120;
 
 function RootNavigator() {
   const { colors, theme } = useApp();
@@ -23,27 +22,15 @@ function RootNavigator() {
   );
 }
 
-// On tablets/desktop/web, center the phone-width app in a framed column so it
-// reads as an intentional product surface instead of a stretched mobile screen.
-function Frame({ children }) {
+// Center the app in a wide column on large screens (reads as a site), full
+// width on phones. No phone-style borders — the backdrop frames the content.
+function ContentFrame({ children }) {
   const { colors } = useApp();
   const { width } = useWindowDimensions();
-  const framed = width > FRAME_MAX + 24;
+  const framed = width > CONTENT_MAX + 24;
   return (
     <View style={[styles.frame, { backgroundColor: framed ? colors.bgTertiary : colors.bg }]}>
-      <View
-        collapsable={false}
-        style={[
-          styles.frameInner,
-          framed && {
-            maxWidth: FRAME_MAX,
-            borderLeftWidth: 1,
-            borderRightWidth: 1,
-            borderColor: colors.cardBorder,
-            ...shadow.lg,
-          },
-        ]}
-      >
+      <View collapsable={false} style={[styles.inner, framed && { maxWidth: CONTENT_MAX }]}>
         {children}
       </View>
     </View>
@@ -54,9 +41,9 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <AppProvider>
-        <Frame>
+        <ContentFrame>
           <RootNavigator />
-        </Frame>
+        </ContentFrame>
       </AppProvider>
     </SafeAreaProvider>
   );
@@ -64,5 +51,5 @@ export default function RootLayout() {
 
 const styles = StyleSheet.create({
   frame: { flex: 1 },
-  frameInner: { flex: 1, width: '100%', alignSelf: 'center' },
+  inner: { flex: 1, width: '100%', alignSelf: 'center' },
 });
