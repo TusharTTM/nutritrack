@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator,
-  SafeAreaView, StatusBar, TextInput, Switch, Alert,
-} from 'react-native';
+  View, Text, StyleSheet, ScrollView, ActivityIndicator,
+  SafeAreaView, StatusBar, TextInput, Switch, Alert } from 'react-native';
+import AppTouchable from '../components/AppTouchable';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useApp } from '../context/AppContext';
 import Card from '../components/Card';
 import SectionHeader from '../components/SectionHeader';
@@ -12,7 +13,8 @@ import { typography, spacing, radius } from '../utils/theme';
 import { kgToDisplay } from '../utils/helpers';
 
 export default function ProfileScreen() {
-  const { colors, theme, toggleTheme, goals, saveGoals, profile, saveProfile, weight, getStreak, session, signOut } = useApp();
+  const { colors, theme, toggleTheme, goals, saveGoals, profile, saveProfile, weight, getStreak, session, signOut, account, signOutAccount } = useApp();
+  const router = useRouter();
   const [editingProfile, setEditingProfile] = useState(false);
   const [editingGoals, setEditingGoals] = useState(false);
   const [localProfile, setLocalProfile] = useState({ ...profile });
@@ -76,14 +78,14 @@ export default function ProfileScreen() {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <ScreenHeader title="Profile">
-          <TouchableOpacity
+          <AppTouchable
             style={[styles.themeBtn, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
             onPress={toggleTheme}
             accessibilityRole="button"
             accessibilityLabel={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           >
             <Ionicons name={theme === 'dark' ? 'sunny' : 'moon'} size={18} color={colors.textSecondary} />
-          </TouchableOpacity>
+          </AppTouchable>
         </ScreenHeader>
 
         {/* Avatar card */}
@@ -145,7 +147,7 @@ export default function ProfileScreen() {
               <Text style={[typography.bodySmMed, { color: colors.textSecondary }]}>Gender</Text>
               <View style={styles.genderRow}>
                 {['Male', 'Female', 'Other'].map(g => (
-                  <TouchableOpacity
+                  <AppTouchable
                     key={g}
                     style={[styles.genderBtn, {
                       backgroundColor: localProfile.gender === g.toLowerCase() ? colors.primary : colors.cardElevated,
@@ -158,7 +160,7 @@ export default function ProfileScreen() {
                     }]}>
                       {g}
                     </Text>
-                  </TouchableOpacity>
+                  </AppTouchable>
                 ))}
               </View>
             </View>
@@ -180,7 +182,7 @@ export default function ProfileScreen() {
             </Text>
             <Card style={styles.sectionCard} elevated>
               {activityLevels.map(level => (
-                <TouchableOpacity
+                <AppTouchable
                   key={level.key}
                   style={[styles.levelRow, { borderBottomColor: colors.cardBorder }]}
                   onPress={() => setLocalProfile(p => ({ ...p, activityLevel: level.key }))}
@@ -192,7 +194,7 @@ export default function ProfileScreen() {
                   {localProfile.activityLevel === level.key && (
                     <Ionicons name="checkmark-circle" size={20} color={colors.primary} />
                   )}
-                </TouchableOpacity>
+                </AppTouchable>
               ))}
             </Card>
           </>
@@ -209,7 +211,7 @@ export default function ProfileScreen() {
                 {dietaryPrefs.map(pref => {
                   const active = (localProfile.dietaryPrefs || []).includes(pref);
                   return (
-                    <TouchableOpacity
+                    <AppTouchable
                       key={pref}
                       style={[styles.prefChip, {
                         backgroundColor: active ? colors.primarySurface : colors.cardElevated,
@@ -230,7 +232,7 @@ export default function ProfileScreen() {
                       }]}>
                         {pref}
                       </Text>
-                    </TouchableOpacity>
+                    </AppTouchable>
                   );
                 })}
               </View>
@@ -275,6 +277,55 @@ export default function ProfileScreen() {
           ))}
         </Card>
 
+        {/* Account */}
+        <SectionHeader title="Account" style={styles.sectionPad} />
+        <Card style={styles.sectionCard} elevated>
+          {account ? (
+            <>
+              <View style={[styles.settingRow, { borderBottomColor: colors.cardBorder }]}>
+                <View style={styles.settingLeft}>
+                  <Ionicons name={account.mode === 'mongodb' ? 'cloud-done-outline' : 'person-circle-outline'} size={20} color={colors.primary} />
+                  <View style={{ marginLeft: spacing.sm, flexShrink: 1 }}>
+                    <Text style={[typography.bodyMed, { color: colors.text }]}>{account.displayName || 'Account'}</Text>
+                    <Text numberOfLines={1} style={[typography.caption, { color: colors.textMuted, maxWidth: 210 }]}>{account.email}</Text>
+                  </View>
+                </View>
+                <View style={[styles.accountBadge, { backgroundColor: colors.primarySurface }]}>
+                  <Text style={[typography.micro, { color: colors.primary }]}>{account.mode === 'mongodb' ? 'Cloud' : 'Local'}</Text>
+                </View>
+              </View>
+              <AppTouchable
+                style={[styles.settingRow, { borderBottomColor: colors.cardBorder }]}
+                onPress={signOutAccount}
+                accessibilityRole="button"
+                accessibilityLabel="Sign out"
+              >
+                <View style={styles.settingLeft}>
+                  <Ionicons name="log-out-outline" size={20} color={colors.error} />
+                  <Text style={[typography.bodyMed, { color: colors.error, marginLeft: spacing.sm }]}>Sign out</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+              </AppTouchable>
+            </>
+          ) : (
+            <AppTouchable
+              style={styles.settingRow}
+              onPress={() => router.push('/login')}
+              accessibilityRole="button"
+              accessibilityLabel="Sign in or create account"
+            >
+              <View style={styles.settingLeft}>
+                <Ionicons name="log-in-outline" size={20} color={colors.primary} />
+                <View style={{ marginLeft: spacing.sm, flexShrink: 1 }}>
+                  <Text style={[typography.bodyMed, { color: colors.text }]}>Sign in or create account</Text>
+                  <Text style={[typography.caption, { color: colors.textMuted }]}>Back up goals & progress</Text>
+                </View>
+              </View>
+              <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+            </AppTouchable>
+          )}
+        </Card>
+
         {/* Settings */}
         <SectionHeader title="Settings" style={styles.sectionPad} />
         <Card style={styles.sectionCard} elevated>
@@ -287,10 +338,10 @@ export default function ProfileScreen() {
               value={theme === 'dark'}
               onValueChange={toggleTheme}
               trackColor={{ false: colors.cardBorder, true: colors.primary }}
-              thumbColor={colors.textInverse}
+              thumbColor="#FFFFFF"
             />
           </View>
-          {session && <TouchableOpacity
+          {session && <AppTouchable
             style={[styles.settingRow, { borderBottomColor: colors.cardBorder }]}
             onPress={handleLogout}
             disabled={logoutBusy}
@@ -310,7 +361,7 @@ export default function ProfileScreen() {
             {logoutBusy
               ? <ActivityIndicator size="small" color={colors.error} />
               : <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />}
-          </TouchableOpacity>}
+          </AppTouchable>}
         </Card>
 
         <Text style={[typography.caption, { color: colors.textMuted, textAlign: 'center', marginVertical: spacing.lg }]}>
@@ -403,4 +454,5 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md, borderBottomWidth: 1,
   },
   settingLeft: { flexDirection: 'row', alignItems: 'center' },
+  accountBadge: { paddingHorizontal: spacing.sm, paddingVertical: 3, borderRadius: radius.full },
 });

@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import AppTouchable from './AppTouchable';
 import { useApp } from '../context/AppContext';
 import { typography, spacing } from '../utils/theme';
 
@@ -12,9 +13,9 @@ export default function SectionHeader({ title, action, onAction, subtitle, style
         {subtitle ? <Text style={[typography.caption, { color: colors.textMuted, marginTop: 2 }]}>{subtitle}</Text> : null}
       </View>
       {action ? (
-        <TouchableOpacity style={styles.action} onPress={onAction} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <AppTouchable style={styles.action} onPress={onAction} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
           <Text style={[typography.bodySmMed, { color: colors.primary }]}>{action}</Text>
-        </TouchableOpacity>
+        </AppTouchable>
       ) : null}
     </View>
   );

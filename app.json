@@ -6,12 +6,17 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0B1712"
+    },
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0E2A1E",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -24,8 +29,8 @@
       "shortName": "NutriTrack",
       "lang": "en",
       "description": "Track meals, nutrition, activity, and progress.",
-      "themeColor": "#327654",
-      "backgroundColor": "#F1F5EF"
+      "themeColor": "#A8D62E",
+      "backgroundColor": "#F5F5F0"
     },
     "experiments": {
       "baseUrl": "/nutritrack"

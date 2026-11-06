@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  SafeAreaView, StatusBar, useWindowDimensions, Alert, TextInput, Modal,
-} from 'react-native';
+  View, Text, StyleSheet, ScrollView, SafeAreaView, StatusBar, useWindowDimensions, Alert, TextInput, Modal } from 'react-native';
+import AppTouchable from '../components/AppTouchable';
 import { LineChart, BarChart } from 'react-native-chart-kit';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../context/AppContext';
@@ -101,13 +100,13 @@ export default function ProgressScreen() {
           {activeView === 'self' && (
             <View style={[styles.rangeToggle, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
               {RANGES.map(r => (
-                <TouchableOpacity
+                <AppTouchable
                   key={r}
                   style={[styles.rangeBtn, range === r && { backgroundColor: colors.primary }]}
                   onPress={() => setRange(r)}
                 >
                   <Text style={[typography.micro, { color: range === r ? colors.textInverse : colors.textSecondary }]}>{r}</Text>
-                </TouchableOpacity>
+                </AppTouchable>
               ))}
             </View>
           )}
@@ -118,7 +117,7 @@ export default function ProgressScreen() {
             { key: 'self', label: 'Self' },
             { key: 'community', label: 'Community' },
           ].map(view => (
-            <TouchableOpacity
+            <AppTouchable
               key={view.key}
               style={[styles.viewButton, activeView === view.key && { backgroundColor: colors.primary }]}
               onPress={() => setActiveView(view.key)}
@@ -128,7 +127,7 @@ export default function ProgressScreen() {
               <Text style={[typography.bodySmMed, { color: activeView === view.key ? colors.textInverse : colors.textSecondary }]}>
                 {view.label}
               </Text>
-            </TouchableOpacity>
+            </AppTouchable>
           ))}
         </View>
 
@@ -149,7 +148,7 @@ export default function ProgressScreen() {
         {/* Tabs */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabsRow}>
           {TABS.map(tab => (
-            <TouchableOpacity
+            <AppTouchable
               key={tab}
               style={[styles.tab, {
                 backgroundColor: activeTab === tab ? colors.primary : colors.card,
@@ -158,7 +157,7 @@ export default function ProgressScreen() {
               onPress={() => setActiveTab(tab)}
             >
               <Text style={[typography.bodySmMed, { color: activeTab === tab ? colors.textInverse : colors.textSecondary }]}>{tab}</Text>
-            </TouchableOpacity>
+            </AppTouchable>
           ))}
         </ScrollView>
 
@@ -212,13 +211,13 @@ export default function ProgressScreen() {
             <>
               <View style={styles.chartHeader}>
                 <Text style={[typography.h3, { color: colors.text }]}>Weight History</Text>
-                <TouchableOpacity
+                <AppTouchable
                   style={[styles.addWeightBtn, { backgroundColor: colors.primaryMuted, borderColor: colors.primary + '40' }]}
                   onPress={() => setWeightModal(true)}
                 >
                   <Ionicons name="add" size={14} color={colors.primary} />
                   <Text style={[typography.micro, { color: colors.primary, marginLeft: 3 }]}>LOG</Text>
-                </TouchableOpacity>
+                </AppTouchable>
               </View>
               {latestW && (
                 <View style={styles.weightStats}>
@@ -313,12 +312,12 @@ export default function ProgressScreen() {
               keyboardType="decimal-pad"
             />
             <View style={styles.dialogBtns}>
-              <TouchableOpacity style={[styles.dialogBtn, { backgroundColor: colors.cardElevated }]} onPress={() => setWeightModal(false)}>
+              <AppTouchable style={[styles.dialogBtn, { backgroundColor: colors.cardElevated }]} onPress={() => setWeightModal(false)}>
                 <Text style={[typography.bodyMed, { color: colors.textSecondary }]}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.dialogBtn, { backgroundColor: colors.primary }]} onPress={handleLogWeight}>
+              </AppTouchable>
+              <AppTouchable style={[styles.dialogBtn, { backgroundColor: colors.primary }]} onPress={handleLogWeight}>
                 <Text style={[typography.bodyMed, { color: colors.textInverse }]}>Save</Text>
-              </TouchableOpacity>
+              </AppTouchable>
             </View>
           </View>
         </View>

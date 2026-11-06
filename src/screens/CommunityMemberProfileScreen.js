@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import AppTouchable from '../components/AppTouchable';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useApp } from '../context/AppContext';
@@ -73,13 +74,13 @@ export default function CommunityMemberProfileScreen() {
 
   return <View style={[styles.screen, { backgroundColor: colors.bg }]}>
     <View style={[styles.header, { borderBottomColor: colors.cardBorder }]}>
-      <Pressable onPress={() => router.back()} style={styles.headerButton} accessibilityRole="button" accessibilityLabel="Go back">
+      <AppTouchable onPress={() => router.back()} style={styles.headerButton} accessibilityRole="button" accessibilityLabel="Go back">
         <Ionicons name="arrow-back" size={21} color={colors.text} />
-      </Pressable>
+      </AppTouchable>
       <Text numberOfLines={1} style={[typography.h3, styles.title, { color: colors.text }]}>{profile?.display_name || 'Member report'}</Text>
-      <Pressable onPress={load} style={styles.headerButton} accessibilityRole="button" accessibilityLabel="Refresh report">
+      <AppTouchable onPress={load} style={styles.headerButton} accessibilityRole="button" accessibilityLabel="Refresh report">
         <Ionicons name="refresh-outline" size={19} color={colors.primary} />
-      </Pressable>
+      </AppTouchable>
     </View>
     <ScrollView contentContainerStyle={styles.content}>
       {loading ? <ActivityIndicator color={colors.primary} style={styles.loading} /> :

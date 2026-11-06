@@ -4,6 +4,9 @@ import { darkColors, lightColors } from '../utils/theme';
 import { getDateKey } from '../utils/helpers';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { signOutOfCommunity } from '../services/communityService';
+import {
+  getStoredAccount, signIn as accountSignIn, signUp as accountSignUp, signOut as accountSignOut,
+} from '../services/accountService';
 
 const AppContext = createContext();
 export const useApp = () => useContext(AppContext);
@@ -21,6 +24,8 @@ const defaultGoals = {
   activeMinutes: 30,
 };
 
+const defaultMealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
+
 const defaultProfile = {
   name: '',
   age: '',
@@ -32,6 +37,7 @@ const defaultProfile = {
   dietaryPrefs: [],
   onboardingDone: false,
   units: { weight: 'kg', volume: 'ml' },
+  mealTypes: defaultMealTypes,
 };
 
 const KEYS = {
@@ -68,12 +74,21 @@ export const AppProvider = ({ children }) => {
   const [activities, setActivities] = useState({}); // { 'YYYY-MM-DD': [ activityEntry ] }
   const [customFoods, setCustomFoods] = useState([]);
   const [favorites, setFavorites] = useState([]); // food ids
+  const [account, setAccount] = useState(null); // signed-in account (local or MongoDB)
+  const [accountLoading, setAccountLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState(null);
   const [authLoading, setAuthLoading] = useState(isSupabaseConfigured);
   const activeUserId = useRef(null);
   const authResolved = useRef(false);
   const loadGeneration = useRef(0);
+
+  // ── Dynamic meal types ("infinite meals") ─────────────────────────────────
+  const mealTypes = (profile.mealTypes && profile.mealTypes.length) ? profile.mealTypes : defaultMealTypes;
+  const emptyDay = useCallback(
+    () => Object.fromEntries(mealTypes.map(m => [m, []])),
+    [mealTypes],
+  );
 
   const resetAccountData = useCallback(() => {
     setGoals(defaultGoals);
@@ -178,6 +193,33 @@ export const AppProvider = ({ children }) => {
     return () => { active = false; };
   }, [loadAccountData]);
 
+  // ── Account (login) ───────────────────────────────────────────────────────
+  useEffect(() => {
+    let active = true;
+    getStoredAccount()
+      .then(value => { if (active) setAccount(value); })
+      .catch(() => {})
+      .finally(() => { if (active) setAccountLoading(false); });
+    return () => { active = false; };
+  }, []);
+
+  const signInAccount = useCallback(async ({ email, password }) => {
+    const next = await accountSignIn({ email, password });
+    setAccount(next);
+    return next;
+  }, []);
+
+  const signUpAccount = useCallback(async ({ email, password, displayName }) => {
+    const next = await accountSignUp({ email, password, displayName });
+    setAccount(next);
+    return next;
+  }, []);
+
+  const signOutAccount = useCallback(async () => {
+    await accountSignOut();
+    setAccount(null);
+  }, []);
+
   const signOut = useCallback(() => signOutOfCommunity(), []);
 
   const persist = async (key, value) => {
@@ -217,16 +259,16 @@ export const AppProvider = ({ children }) => {
   // ── Food Logs ─────────────────────────────────────────────────────────────
   const getTodayLogs = useCallback(() => {
     const today = getTodayKey();
-    return logs[today] || { Breakfast: [], Lunch: [], Dinner: [], Snacks: [] };
-  }, [logs]);
+    return { ...emptyDay(), ...(logs[today] || {}) };
+  }, [logs, emptyDay]);
 
   const getLogsForDate = useCallback((date) => {
-    return logs[date] || { Breakfast: [], Lunch: [], Dinner: [], Snacks: [] };
-  }, [logs]);
+    return { ...emptyDay(), ...(logs[date] || {}) };
+  }, [logs, emptyDay]);
 
   const addFoodLog = useCallback(async (meal, food, quantity) => {
     const today = getTodayKey();
-    const dayLogs = logs[today] || { Breakfast: [], Lunch: [], Dinner: [], Snacks: [] };
+    const dayLogs = { ...emptyDay(), ...(logs[today] || {}) };
     const entry = {
       ...food,
       quantity,
@@ -243,18 +285,62 @@ export const AppProvider = ({ children }) => {
     const recents = profile.recentFoods || [];
     const filtered = recents.filter(f => f.id !== food.id).slice(0, 19);
     await saveProfile({ recentFoods: [food, ...filtered] });
-  }, [logs, profile, saveProfile]);
+  }, [logs, profile, saveProfile, emptyDay]);
 
   const removeFoodLog = useCallback(async (meal, logId, date) => {
     const key = date || getTodayKey();
-    const dayLogs = logs[key] || { Breakfast: [], Lunch: [], Dinner: [], Snacks: [] };
+    const dayLogs = { ...emptyDay(), ...(logs[key] || {}) };
     const next = {
       ...logs,
-      [key]: { ...dayLogs, [meal]: dayLogs[meal].filter(i => i.logId !== logId) },
+      [key]: { ...dayLogs, [meal]: (dayLogs[meal] || []).filter(i => i.logId !== logId) },
     };
     setLogs(next);
     await persist(KEYS.LOGS, next);
-  }, [logs]);
+  }, [logs, emptyDay]);
+
+  // ── Meal type management (add / rename / remove) ──────────────────────────
+  const addMealType = useCallback(async (name) => {
+    const trimmed = String(name || '').trim().slice(0, 24);
+    if (!trimmed) return false;
+    const current = mealTypes;
+    if (current.some(m => m.toLowerCase() === trimmed.toLowerCase())) return false;
+    await saveProfile({ mealTypes: [...current, trimmed] });
+    return true;
+  }, [mealTypes, saveProfile]);
+
+  const renameMealType = useCallback(async (oldName, newName) => {
+    const trimmed = String(newName || '').trim().slice(0, 24);
+    if (!trimmed || trimmed === oldName) return false;
+    const current = mealTypes;
+    if (current.some(m => m !== oldName && m.toLowerCase() === trimmed.toLowerCase())) return false;
+    const nextMeals = current.map(m => (m === oldName ? trimmed : m));
+    const nextLogs = {};
+    for (const [day, dayLogs] of Object.entries(logs)) {
+      const copy = {};
+      for (const [meal, items] of Object.entries(dayLogs)) copy[meal === oldName ? trimmed : meal] = items;
+      nextLogs[day] = copy;
+    }
+    setLogs(nextLogs);
+    await persist(KEYS.LOGS, nextLogs);
+    await saveProfile({ mealTypes: nextMeals });
+    return true;
+  }, [mealTypes, logs, saveProfile]);
+
+  const removeMealType = useCallback(async (name) => {
+    if (mealTypes.length <= 1) return false;
+    const nextMeals = mealTypes.filter(m => m !== name);
+    const nextLogs = {};
+    for (const [day, dayLogs] of Object.entries(logs)) {
+      const copy = { ...dayLogs };
+      delete copy[name];
+      nextLogs[day] = copy;
+    }
+    setLogs(nextLogs);
+    await persist(KEYS.LOGS, nextLogs);
+    await saveProfile({ mealTypes: nextMeals });
+    return true;
+  }, [mealTypes, logs, saveProfile]);
+
 
   // ── Water ─────────────────────────────────────────────────────────────────
   const getTodayWater = useCallback(() => water[getTodayKey()] || 0, [water]);
@@ -404,12 +490,14 @@ export const AppProvider = ({ children }) => {
       theme, colors, toggleTheme,
       // Authentication
       session, authLoading, signOut,
+      account, accountLoading, signInAccount, signUpAccount, signOutAccount,
       // Profile
       profile, saveProfile, completeOnboarding,
       // Goals
       goals, saveGoals,
       // Food
       logs, getTodayLogs, getLogsForDate, addFoodLog, removeFoodLog,
+      mealTypes, addMealType, renameMealType, removeMealType,
       // Water
       water, getTodayWater, getWaterForDate, addWater, removeWater, setWaterForDate,
       // Weight

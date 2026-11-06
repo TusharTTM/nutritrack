@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity, SafeAreaView,
-  StatusBar, TextInput, ScrollView, Platform,
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+  View, Text, StyleSheet, SafeAreaView,
+  StatusBar, TextInput, ScrollView, Platform } from 'react-native';
+import AppTouchable from '../components/AppTouchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../context/AppContext';
 import { typography, spacing, radius } from '../utils/theme';
 import { calcTDEE, calcMacros } from '../utils/helpers';
+import { LogoMark } from '../components/Logo';
 
 const STEPS = [
   { id: 'welcome' },
@@ -95,9 +95,9 @@ export default function OnboardingScreen() {
       {step > 0 && step < STEPS.length - 1 && (
         <View style={styles.progressRow}>
           {step > 0 && (
-            <TouchableOpacity onPress={back} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+            <AppTouchable onPress={back} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
               <Ionicons name="chevron-back" size={22} color={colors.textSecondary} />
-            </TouchableOpacity>
+            </AppTouchable>
           )}
           <View style={[styles.progressTrack, { backgroundColor: colors.cardBorder }]}>
             <View style={[styles.progressFill, {
@@ -119,12 +119,9 @@ export default function OnboardingScreen() {
         {/* ── WELCOME ─────────────────────────────────────── */}
         {currentStep.id === 'welcome' && (
           <View style={styles.centerContent}>
-            <LinearGradient
-              colors={[colors.primarySurface, colors.bg]}
-              style={styles.welcomeGradient}
-            >
-              <Text style={styles.welcomeEmoji}>🥦</Text>
-            </LinearGradient>
+            <View style={[styles.welcomeGradient, { backgroundColor: colors.primarySurface }]}>
+              <LogoMark size={100} />
+            </View>
             <Text style={[typography.displayMd, { color: colors.text, textAlign: 'center', marginTop: spacing.xl }]}>
               Welcome to{'\n'}
               <Text style={{ color: colors.primaryLight }}>NutriTrack</Text>
@@ -135,13 +132,15 @@ export default function OnboardingScreen() {
             </Text>
             <View style={styles.featureList}>
               {[
-                { icon: '📊', text: 'Track calories & macros' },
-                { icon: '💧', text: 'Monitor hydration' },
-                { icon: '🏃', text: 'Log activities' },
-                { icon: '🎯', text: 'Personalise your daily goals' },
+                { ion: 'stats-chart', c: colors.primary, text: 'Track calories & macros' },
+                { ion: 'water', c: colors.water, text: 'Monitor hydration' },
+                { ion: 'fitness', c: colors.warning, text: 'Log activities' },
+                { ion: 'flag-outline', c: colors.accentPink, text: 'Personalise your daily goals' },
               ].map(f => (
                 <View key={f.text} style={[styles.featureItem, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
-                  <Text style={{ fontSize: 20 }}>{f.icon}</Text>
+                  <View style={[styles.featureIcon, { backgroundColor: f.c + '1f' }]}>
+                    <Ionicons name={f.ion} size={20} color={f.c} />
+                  </View>
                   <Text style={[typography.bodyMed, { color: colors.text }]}>{f.text}</Text>
                 </View>
               ))}
@@ -182,7 +181,7 @@ export default function OnboardingScreen() {
             <Text style={[typography.bodySmMed, { color: colors.textSecondary, marginBottom: spacing.sm }]}>Gender</Text>
             <View style={styles.genderRow}>
               {[{ key: 'male', label: '♂ Male' }, { key: 'female', label: '♀ Female' }, { key: 'other', label: '⚧ Other' }].map(g => (
-                <TouchableOpacity
+                <AppTouchable
                   key={g.key}
                   style={[styles.genderBtn, {
                     backgroundColor: form.gender === g.key ? colors.primary : colors.card,
@@ -191,7 +190,7 @@ export default function OnboardingScreen() {
                   onPress={() => update('gender', g.key)}
                 >
                   <Text style={[typography.bodyMed, { color: form.gender === g.key ? colors.textInverse : colors.textSecondary }]}>{g.label}</Text>
-                </TouchableOpacity>
+                </AppTouchable>
               ))}
             </View>
 
@@ -228,7 +227,7 @@ export default function OnboardingScreen() {
               We&apos;ll tailor your calorie and macro targets.
             </Text>
             {GOALS.map(goal => (
-              <TouchableOpacity
+              <AppTouchable
                 key={goal.key}
                 style={[styles.optionCard, {
                   backgroundColor: form.goal === goal.key ? colors.primarySurface : colors.card,
@@ -244,7 +243,7 @@ export default function OnboardingScreen() {
                 {form.goal === goal.key && (
                   <Ionicons name="checkmark-circle" size={22} color={colors.primary} />
                 )}
-              </TouchableOpacity>
+              </AppTouchable>
             ))}
           </View>
         )}
@@ -258,7 +257,7 @@ export default function OnboardingScreen() {
               Helps us calculate your daily energy needs.
             </Text>
             {ACTIVITY_LEVELS.map(level => (
-              <TouchableOpacity
+              <AppTouchable
                 key={level.key}
                 style={[styles.optionCard, {
                   backgroundColor: form.activityLevel === level.key ? colors.primarySurface : colors.card,
@@ -274,7 +273,7 @@ export default function OnboardingScreen() {
                 {form.activityLevel === level.key && (
                   <Ionicons name="checkmark-circle" size={22} color={colors.primary} />
                 )}
-              </TouchableOpacity>
+              </AppTouchable>
             ))}
           </View>
         )}
@@ -291,7 +290,7 @@ export default function OnboardingScreen() {
               {DIETARY_PREFS.map(pref => {
                 const active = form.dietaryPrefs.includes(pref);
                 return (
-                  <TouchableOpacity
+                  <AppTouchable
                     key={pref}
                     style={[styles.prefChip, {
                       backgroundColor: active ? colors.primarySurface : colors.card,
@@ -301,13 +300,13 @@ export default function OnboardingScreen() {
                   >
                     {active && <Ionicons name="checkmark" size={14} color={colors.primary} style={{ marginRight: 4 }} />}
                     <Text style={[typography.bodyMed, { color: active ? colors.primaryLight : colors.textSecondary }]}>{pref}</Text>
-                  </TouchableOpacity>
+                  </AppTouchable>
                 );
               })}
             </View>
-            <TouchableOpacity onPress={next} style={styles.skipBtn}>
+            <AppTouchable onPress={next} style={styles.skipBtn}>
               <Text style={[typography.bodySm, { color: colors.textMuted }]}>Skip this step →</Text>
-            </TouchableOpacity>
+            </AppTouchable>
           </View>
         )}
 
@@ -353,7 +352,7 @@ export default function OnboardingScreen() {
 
       {/* CTA Button */}
       <View style={[styles.footer, { backgroundColor: colors.bg }]}>
-        <TouchableOpacity
+        <AppTouchable
           style={[styles.ctaBtn, {
             backgroundColor: canProceed() ? colors.primary : colors.cardBorder,
             opacity: canProceed() ? 1 : 0.6,
@@ -367,7 +366,7 @@ export default function OnboardingScreen() {
           {step !== STEPS.length - 1 && (
             <Ionicons name="arrow-forward" size={18} color={colors.textInverse} style={{ marginLeft: spacing.sm }} />
           )}
-        </TouchableOpacity>
+        </AppTouchable>
       </View>
     </SafeAreaView>
   );
@@ -388,14 +387,17 @@ const styles = StyleSheet.create({
   scroll: { flexGrow: 1, paddingBottom: 100 },
   centerContent: { flex: 1, alignItems: 'center', paddingHorizontal: spacing.lg, paddingTop: spacing.xl * 2 },
   welcomeGradient: {
-    width: 120, height: 120, borderRadius: 60,
+    width: 148, height: 148, borderRadius: 74,
     alignItems: 'center', justifyContent: 'center',
   },
-  welcomeEmoji: { fontSize: 60 },
   featureList: { width: '100%', marginTop: spacing.xl, gap: spacing.sm },
   featureItem: {
     flexDirection: 'row', alignItems: 'center', gap: spacing.md,
     padding: spacing.md, borderRadius: radius.lg, borderWidth: 1,
+  },
+  featureIcon: {
+    width: 40, height: 40, borderRadius: radius.md,
+    alignItems: 'center', justifyContent: 'center',
   },
   stepContent: { paddingHorizontal: spacing.lg, paddingTop: spacing.xl },
   stepEmoji: { fontSize: 52 },

@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import AppTouchable from './AppTouchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../context/AppContext';
 import { typography, spacing, radius } from '../utils/theme';
@@ -16,13 +17,13 @@ export default function EmptyState({ icon = 'file-tray-outline', title, subtitle
         <Text style={[typography.bodySm, styles.text, { color: colors.textSecondary, marginTop: spacing.sm }]}>{subtitle}</Text>
       ) : null}
       {action ? (
-        <TouchableOpacity
+        <AppTouchable
           style={[styles.btn, { backgroundColor: colors.primary }]}
           onPress={onAction}
           accessibilityRole="button"
         >
           <Text style={[typography.bodyMed, { color: colors.textInverse }]}>{action}</Text>
-        </TouchableOpacity>
+        </AppTouchable>
       ) : null}
     </View>
   );

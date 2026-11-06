@@ -1,0 +1,65 @@
+{
+  "width": 1920,
+  "height": 1080,
+  "fps": 60,
+  "durationInFrames": 1800,
+  "tagline1": "Eat Better.",
+  "tagline2": "Live Healthier.",
+  "appName": "NutriTrack",
+  "scenes": [
+    {
+      "id": "intro",
+      "name": "Brand intro",
+      "start": 0,
+      "dur": 270,
+      "phone": null
+    },
+    {
+      "id": "home",
+      "name": "Dashboard",
+      "start": 255,
+      "dur": 360,
+      "phone": "03-home.svg",
+      "eyebrow": "Your day at a glance",
+      "headline": "Everything you eat, in one calm place.",
+      "subline": "Calories, macros, water and habits — tracked beautifully."
+    },
+    {
+      "id": "nutrition",
+      "name": "Nutrition",
+      "start": 600,
+      "dur": 300,
+      "phone": "05-nutrition.svg",
+      "eyebrow": "Nutrition",
+      "headline": "Know your macros, effortlessly.",
+      "subline": "Protein, carbs, fat and fiber — always in view."
+    },
+    {
+      "id": "progress",
+      "name": "Progress",
+      "start": 885,
+      "dur": 285,
+      "phone": "06-progress.svg",
+      "eyebrow": "Progress",
+      "headline": "Watch the trend go your way.",
+      "subline": "Weight, water and streaks, over time."
+    },
+    {
+      "id": "activity",
+      "name": "Activity & Diary",
+      "start": 1155,
+      "dur": 300,
+      "phone": "07-activity.svg",
+      "eyebrow": "Activity & Diary",
+      "headline": "Log workouts and meals in seconds.",
+      "subline": "Stay consistent, every single day."
+    },
+    {
+      "id": "outro",
+      "name": "Outro",
+      "start": 1440,
+      "dur": 360,
+      "phone": null
+    }
+  ]
+}

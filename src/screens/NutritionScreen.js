@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  SafeAreaView, StatusBar, FlatList, Modal, TextInput, Alert,
-} from 'react-native';
+  View, Text, StyleSheet, ScrollView, SafeAreaView, StatusBar, FlatList, Modal, TextInput, Alert } from 'react-native';
+import AppTouchable from '../components/AppTouchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../context/AppContext';
 import Card from '../components/Card';
@@ -11,14 +10,16 @@ import EmptyState from '../components/EmptyState';
 import ScreenHeader from '../components/ScreenHeader';
 import MacroBar from '../components/MacroBar';
 import { typography, spacing, radius } from '../utils/theme';
-import { foodDatabase, mealTypes, mealIcons } from '../data/foods';
+import { foodDatabase } from '../data/foods';
 import { getLast7Keys, getDayLabel, getTodayKey } from '../utils/helpers';
+import MealGlyph, { mealColor } from '../components/MealGlyph';
+import CategoryIcon, { categoryColor } from '../components/CategoryIcon';
 
 export default function NutritionScreen() {
   const {
     colors, theme, goals, getLogsForDate, calcTotals,
     addFoodLog, removeFoodLog, customFoods, addCustomFood,
-    profile,
+    profile, mealTypes,
   } = useApp();
 
   const [selectedDate, setSelectedDate] = useState(getTodayKey());
@@ -80,14 +81,14 @@ export default function NutritionScreen() {
 
         {/* Header */}
         <ScreenHeader title="Nutrition">
-          <TouchableOpacity
+          <AppTouchable
             style={[styles.iconBtn, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
             onPress={() => setCustomFoodModal(true)}
             accessibilityRole="button"
             accessibilityLabel="Add a custom food"
           >
             <Ionicons name="add-circle-outline" size={22} color={colors.primary} />
-          </TouchableOpacity>
+          </AppTouchable>
         </ScreenHeader>
 
         {/* Date strip */}
@@ -97,7 +98,7 @@ export default function NutritionScreen() {
             const hasFoods = Object.values(getLogsForDate(date)).flat().length > 0;
             const d = new Date(date + 'T12:00:00');
             return (
-              <TouchableOpacity
+              <AppTouchable
                 key={date}
                 style={[styles.dateChip, {
                   backgroundColor: isSelected ? colors.primary : colors.card,
@@ -112,7 +113,7 @@ export default function NutritionScreen() {
                   {d.getDate()}
                 </Text>
                 {hasFoods && <View style={[styles.dateDot, { backgroundColor: isSelected ? colors.textInverse : colors.primary }]} />}
-              </TouchableOpacity>
+              </AppTouchable>
             );
           })}
         </ScrollView>
@@ -131,7 +132,7 @@ export default function NutritionScreen() {
         {/* Meal filter pills */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRow}>
           {['All', ...mealTypes].map(f => (
-            <TouchableOpacity
+            <AppTouchable
               key={f}
               style={[styles.filterChip, {
                 backgroundColor: activeMealFilter === f ? colors.primary : colors.card,
@@ -139,18 +140,18 @@ export default function NutritionScreen() {
               }]}
               onPress={() => setActiveMealFilter(f)}
             >
-              {f !== 'All' && <Text style={{ marginRight: 4 }}>{mealIcons[f]}</Text>}
+              {f !== 'All' && <View style={{ marginRight: 5 }}><MealGlyph meal={f} index={mealTypes.indexOf(f)} size={16} /></View>}
               <Text style={[typography.bodySmMed, { color: activeMealFilter === f ? colors.textInverse : colors.textSecondary }]}>
                 {f}
               </Text>
-            </TouchableOpacity>
+            </AppTouchable>
           ))}
         </ScrollView>
 
         {/* Add food button */}
         <View style={styles.logList}>
           {isToday && (
-            <TouchableOpacity
+            <AppTouchable
               style={[styles.addFoodGlobalBtn, { backgroundColor: colors.primaryMuted, borderColor: colors.primary + '40' }]}
               onPress={() => {
                 setAddMeal(activeMealFilter === 'All' ? 'Breakfast' : activeMealFilter);
@@ -162,7 +163,7 @@ export default function NutritionScreen() {
             >
               <Ionicons name="add" size={18} color={colors.primary} />
               <Text style={[typography.bodyMed, { color: colors.primary, marginLeft: 6 }]}>Add Food</Text>
-            </TouchableOpacity>
+            </AppTouchable>
           )}
 
           {visibleItems.length === 0 ? (
@@ -171,7 +172,9 @@ export default function NutritionScreen() {
             visibleItems.map(item => (
               <Card key={item.logId} style={styles.logItem} elevated>
                 <View style={styles.logItemRow}>
-                  <Text style={{ fontSize: 22, marginRight: spacing.sm }}>{mealIcons[item.meal]}</Text>
+                  <View style={[styles.logIconBox, { backgroundColor: mealColor(item.meal, colors) + '1f' }]}>
+                    <MealGlyph meal={item.meal} index={Math.max(0, mealTypes.indexOf(item.meal))} size={20} />
+                  </View>
                   <View style={{ flex: 1 }}>
                     <Text style={[typography.bodyMed, { color: colors.text }]}>{item.name}</Text>
                     <Text style={[typography.caption, { color: colors.textMuted }]}>
@@ -189,13 +192,13 @@ export default function NutritionScreen() {
                     </Text>
                     <Text style={[typography.micro, { color: colors.textMuted }]}>kcal</Text>
                     {isToday && (
-                      <TouchableOpacity
+                      <AppTouchable
                         onPress={() => removeFoodLog(item.meal, item.logId)}
                         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                         style={{ marginTop: 6 }}
                       >
                         <Ionicons name="trash-outline" size={14} color={colors.textMuted} />
-                      </TouchableOpacity>
+                      </AppTouchable>
                     )}
                   </View>
                 </View>
@@ -210,7 +213,7 @@ export default function NutritionScreen() {
             <SectionHeader title="Recent Foods" />
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.sm }}>
               {profile.recentFoods.slice(0, 8).map(food => (
-                <TouchableOpacity
+                <AppTouchable
                   key={food.id}
                   style={[styles.recentChip, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
                   onPress={() => {
@@ -223,7 +226,7 @@ export default function NutritionScreen() {
                 >
                   <Text style={[typography.bodySmMed, { color: colors.text }]}>{food.name}</Text>
                   <Text style={[typography.caption, { color: colors.primary }]}>{food.calories} kcal</Text>
-                </TouchableOpacity>
+                </AppTouchable>
               ))}
             </ScrollView>
           </View>
@@ -236,19 +239,19 @@ export default function NutritionScreen() {
       <Modal visible={addToMealModal} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={[styles.modal, { backgroundColor: colors.bg }]}>
           <View style={[styles.modalHeader, { borderBottomColor: colors.cardBorder }]}>
-            <TouchableOpacity onPress={() => { setAddToMealModal(false); setSelectedFood(null); }}>
+            <AppTouchable onPress={() => { setAddToMealModal(false); setSelectedFood(null); }}>
               <Text style={[typography.bodyMed, { color: colors.textSecondary }]}>Cancel</Text>
-            </TouchableOpacity>
+            </AppTouchable>
             <Text style={[typography.h3, { color: colors.text }]}>Add Food</Text>
-            <TouchableOpacity onPress={handleAddToMeal} disabled={!selectedFood}>
+            <AppTouchable onPress={handleAddToMeal} disabled={!selectedFood}>
               <Text style={[typography.bodyMed, { color: selectedFood ? colors.primary : colors.textMuted }]}>Add</Text>
-            </TouchableOpacity>
+            </AppTouchable>
           </View>
 
           {/* Meal selector */}
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.mealSelector}>
             {mealTypes.map(m => (
-              <TouchableOpacity
+              <AppTouchable
                 key={m}
                 style={[styles.mealChip, {
                   backgroundColor: addMeal === m ? colors.primary : colors.card,
@@ -256,9 +259,9 @@ export default function NutritionScreen() {
                 }]}
                 onPress={() => setAddMeal(m)}
               >
-                <Text>{mealIcons[m]}</Text>
+                <MealGlyph meal={m} index={mealTypes.indexOf(m)} size={18} />
                 <Text style={[typography.bodySmMed, { color: addMeal === m ? colors.textInverse : colors.textSecondary, marginLeft: 4 }]}>{m}</Text>
-              </TouchableOpacity>
+              </AppTouchable>
             ))}
           </ScrollView>
 
@@ -279,22 +282,22 @@ export default function NutritionScreen() {
             <View style={[styles.selectedMini, { backgroundColor: colors.primarySurface, borderColor: colors.primary + '40' }]}>
               <Text style={[typography.h4, { color: colors.primaryLight }]}>{selectedFood.name}</Text>
               <View style={styles.qtyRow}>
-                <TouchableOpacity
+                <AppTouchable
                   style={[styles.qtyBtn, { backgroundColor: colors.primary }]}
                   onPress={() => setQty(q => String(Math.max(0.5, parseFloat(q) - 0.5)))}
                 >
                   <Ionicons name="remove" size={14} color={colors.textInverse} />
-                </TouchableOpacity>
+                </AppTouchable>
                 <TextInput
                   style={[styles.qtyInput, { color: colors.text, borderBottomColor: colors.primary }]}
                   value={qty} onChangeText={setQty} keyboardType="decimal-pad" selectTextOnFocus
                 />
-                <TouchableOpacity
+                <AppTouchable
                   style={[styles.qtyBtn, { backgroundColor: colors.primary }]}
                   onPress={() => setQty(q => String(parseFloat(q) + 0.5))}
                 >
                   <Ionicons name="add" size={14} color={colors.textInverse} />
-                </TouchableOpacity>
+                </AppTouchable>
                 <Text style={[typography.bodySm, { color: colors.textMuted, marginLeft: spacing.sm }]}>× serving</Text>
               </View>
             </View>
@@ -305,19 +308,22 @@ export default function NutritionScreen() {
             keyExtractor={i => i.id}
             keyboardShouldPersistTaps="handled"
             renderItem={({ item }) => (
-              <TouchableOpacity
+              <AppTouchable
                 style={[styles.foodRow, {
                   backgroundColor: selectedFood?.id === item.id ? colors.primarySurface : 'transparent',
                   borderBottomColor: colors.cardBorder,
                 }]}
                 onPress={() => setSelectedFood(item)}
               >
+                <View style={[styles.foodIconBox, { backgroundColor: categoryColor(item.category, colors) + '1a' }]}>
+                  <CategoryIcon category={item.category} size={20} />
+                </View>
                 <View style={{ flex: 1 }}>
                   <Text style={[typography.bodyMed, { color: colors.text }]}>{item.name}</Text>
                   <Text style={[typography.caption, { color: colors.textMuted }]}>{item.serving} · {item.category}</Text>
                 </View>
                 <Text style={[typography.bodySmMed, { color: colors.primary }]}>{item.calories} kcal</Text>
-              </TouchableOpacity>
+              </AppTouchable>
             )}
             ListEmptyComponent={<EmptyState icon="search-outline" title="No foods found" />}
           />
@@ -328,13 +334,13 @@ export default function NutritionScreen() {
       <Modal visible={customFoodModal} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={[styles.modal, { backgroundColor: colors.bg }]}>
           <View style={[styles.modalHeader, { borderBottomColor: colors.cardBorder }]}>
-            <TouchableOpacity onPress={() => setCustomFoodModal(false)}>
+            <AppTouchable onPress={() => setCustomFoodModal(false)}>
               <Text style={[typography.bodyMed, { color: colors.textSecondary }]}>Cancel</Text>
-            </TouchableOpacity>
+            </AppTouchable>
             <Text style={[typography.h3, { color: colors.text }]}>Create Food</Text>
-            <TouchableOpacity onPress={handleAddCustomFood}>
+            <AppTouchable onPress={handleAddCustomFood}>
               <Text style={[typography.bodyMed, { color: colors.primary }]}>Save</Text>
-            </TouchableOpacity>
+            </AppTouchable>
           </View>
           <ScrollView contentContainerStyle={{ padding: spacing.md, gap: spacing.md }}>
             {[
@@ -399,6 +405,10 @@ const styles = StyleSheet.create({
   },
   logItem: { marginBottom: spacing.sm },
   logItemRow: { flexDirection: 'row', alignItems: 'center' },
+  logIconBox: {
+    width: 42, height: 42, borderRadius: radius.md,
+    alignItems: 'center', justifyContent: 'center', marginRight: spacing.sm,
+  },
   macroChips: { flexDirection: 'row', marginTop: 4 },
   recentChip: { padding: spacing.sm, borderRadius: radius.md, borderWidth: 1, minWidth: 100, gap: 2 },
   modal: { flex: 1 },
@@ -426,6 +436,10 @@ const styles = StyleSheet.create({
   foodRow: {
     flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: spacing.md, paddingVertical: spacing.md, borderBottomWidth: 1,
+  },
+  foodIconBox: {
+    width: 38, height: 38, borderRadius: radius.sm,
+    alignItems: 'center', justifyContent: 'center', marginRight: spacing.sm,
   },
   formInput: {
     borderWidth: 1, borderRadius: radius.md,
