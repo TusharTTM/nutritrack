@@ -1,0 +1,32 @@
+{
+  "name": "NutriTrack — Eat Better. Live Healthier.",
+  "short_name": "NutriTrack",
+  "description": "Track meals, macros, water and habits — all in one calm, beautiful place.",
+  "start_url": "/nutritrack/",
+  "scope": "/nutritrack/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0E100B",
+  "theme_color": "#A8D62E",
+  "categories": ["health", "fitness", "lifestyle"],
+  "icons": [
+    {
+      "src": "/nutritrack/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/nutritrack/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/nutritrack/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

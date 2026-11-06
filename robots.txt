@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://tusharttm.github.io/nutritrack/sitemap.xml
