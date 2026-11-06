@@ -34,12 +34,8 @@ jobs:
       - name: Build web app
         run: npx expo export --platform web
 
-      # Single-page app: serve the app shell for unknown routes so deep links
-      # like /login keep working after a refresh on GitHub Pages.
-      - name: Add SPA 404 fallback
-        run: cp dist/index.html dist/404.html
-
-      # Inject social/SEO/PWA tags into both the shell and the 404 fallback.
+      # Copies the shell to 404.html for the SPA fallback, then injects the
+      # social/SEO/PWA tags and the browser-surface CSS into both files.
       - name: Finalize web build
         run: node scripts/finalize-web.mjs
 

@@ -34,10 +34,19 @@ The app uses a single-page web build. The `public/_redirects` file sends direct 
 ### Build pipeline
 
 `npm run build:web` runs `expo export --platform web` and then
-`scripts/finalize-web.mjs`, which injects the social/SEO/PWA tags (Open Graph,
-Twitter card, canonical, web manifest, apple-touch-icon) into both `index.html`
-and the SPA 404 fallback, and writes `robots.txt` and `sitemap.xml`. The
-Pages workflow runs the same finalize step after copying the 404 fallback.
+`scripts/finalize-web.mjs`, which:
+
+- copies `index.html` to `404.html` so deep links survive a refresh on GitHub
+  Pages (single-page app),
+- injects the social/SEO/PWA tags (Open Graph, Twitter card, canonical, web
+  manifest, apple-touch-icon) into both files,
+- injects the browser-surface CSS — selection, caret, focus-visible rings,
+  scrollbar, font smoothing and tap highlight — because Expo's static export
+  ships no stylesheet of its own and those UA defaults belong to no design
+  system.
+
+The Pages workflow runs the same finalize step, so a local build and a
+deployed build are identical.
 
 The 1200x630 share card (`public/og-image.png`) and the PWA icons are rendered
 from the real app mockup by `npm run og` (`scripts/build-og-card.mjs`); Expo

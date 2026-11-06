@@ -27,6 +27,61 @@ const IMAGE = `${SITE_URL}/og-image.png`;
 const START = "<!-- nutritrack:social -->";
 const END = "<!-- /nutritrack:social -->";
 
+// Browser surfaces the app never draws itself. A React Native web build leaves
+// text selection, the caret, the scrollbar, focus rings and font smoothing at
+// their UA defaults, which belong to no design system — and are the cheapest
+// signal that a page was assembled rather than built. Expo's static export has
+// no stylesheet of its own to put these in, so they ship with the head tags.
+const INK = "#0E100B";
+const PAPER = "#F5F5F0";
+const LIME = "#C6F24E";
+const DEEP_LIME = "#A3E635";
+
+const CSS_START = "<!-- nutritrack:browser-css -->";
+const CSS_END = "<!-- /nutritrack:browser-css -->";
+
+const BROWSER_CSS = `${CSS_START}
+    <style id="nutritrack-browser">
+      /* Selection and caret carry the brand instead of the UA blue. */
+      ::selection { background: ${LIME}; color: ${INK}; }
+      ::-moz-selection { background: ${LIME}; color: ${INK}; }
+      input, textarea, [contenteditable] { caret-color: ${DEEP_LIME}; }
+
+      /* Keyboard focus stays visible; pointer focus stays quiet. */
+      :focus { outline: none; }
+      :focus-visible {
+        outline: 2px solid ${DEEP_LIME};
+        outline-offset: 3px;
+        border-radius: 4px;
+      }
+
+      /* One scrollbar for the whole shell, themed from the palette. */
+      * { scrollbar-color: rgba(198, 242, 78, 0.35) transparent; }
+      ::-webkit-scrollbar { width: 11px; height: 11px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(198, 242, 78, 0.28);
+        border-radius: 999px;
+        border: 3px solid transparent;
+        background-clip: content-box;
+      }
+      ::-webkit-scrollbar-thumb:hover { background: rgba(198, 242, 78, 0.45); background-clip: content-box; }
+
+      /* Underlines sit clear of the descenders, and the type renders crisply. */
+      a, [role="link"] { text-underline-offset: 3px; text-decoration-thickness: 1px; }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        overscroll-behavior-y: none;
+      }
+      /* Touch taps should not flash a highlight the design never asked for. */
+      a, button, [role="button"], [role="link"] { -webkit-tap-highlight-color: transparent; }
+    </style>
+    ${CSS_END}`;
+
+
 const TAGS = `${START}
     <link rel="canonical" href="${SITE_URL}/" />
     <link rel="manifest" href="${BASE}/site.webmanifest" />
@@ -57,17 +112,28 @@ if (!fs.existsSync(dist)) {
   process.exit(1);
 }
 
+// Single-page app: the app shell doubles as the 404 fallback so deep links like
+// /login survive a refresh on GitHub Pages. This lives here rather than in the
+// build script so one command produces the complete site, and so a local build
+// can never silently ship without the fallback.
+const shell = path.join(dist, "index.html");
+if (fs.existsSync(shell)) {
+  fs.copyFileSync(shell, path.join(dist, "404.html"));
+  console.log("index.html -> 404.html (SPA fallback)");
+}
+
 const inject = (file) => {
   const full = path.join(dist, file);
   if (!fs.existsSync(full)) return;
   let html = fs.readFileSync(full, "utf8");
   // Drop any previously injected block so repeated builds stay clean.
   html = html.replace(new RegExp(`${START}[\\s\\S]*?${END}\\s*`, "g"), "");
+  html = html.replace(new RegExp(`${CSS_START}[\\s\\S]*?${CSS_END}\\s*`, "g"), "");
   if (!html.includes("</head>")) {
     console.error(`${file}: no </head> found, skipped`);
     return;
   }
-  html = html.replace("</head>", `${TAGS}\n  </head>`);
+  html = html.replace("</head>", `${TAGS}\n${BROWSER_CSS}\n  </head>`);
   fs.writeFileSync(full, html);
   console.log(`${file}: social/SEO tags injected`);
 };
