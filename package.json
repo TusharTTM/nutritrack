@@ -38,7 +38,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint --no-cache",
-    "build:web": "expo export --platform web"
+    "build:web": "npx expo export --platform web && node scripts/finalize-web.mjs",
+    "og": "node scripts/build-og-card.mjs"
   },
   "private": true,
   "devDependencies": {

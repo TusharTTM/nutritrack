@@ -39,6 +39,10 @@ jobs:
       - name: Add SPA 404 fallback
         run: cp dist/index.html dist/404.html
 
+      # Inject social/SEO/PWA tags into both the shell and the 404 fallback.
+      - name: Finalize web build
+        run: node scripts/finalize-web.mjs
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
