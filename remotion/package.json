@@ -5,9 +5,10 @@
   "description": "NutriTrack app promo video — Remotion (1920x1080, 60fps, 1800 frames)",
   "scripts": {
     "dev": "remotion studio",
-    "still": "remotion still NutriTrackPromo out/still.png --frame=90",
-    "stills": "remotion still NutriTrackPromo out/scene-% jpeg --frame=90,420,750,1020,1300,1620",
-    "render": "remotion render NutriTrackPromo out/promo.mp4"
+    "still": "remotion still NutriTrackPromo out/still.png --frame=150",
+    "stills": "node qc/render-stills.mjs",
+    "preview": "node qc/render-preview.mjs",
+    "render": "remotion render NutriTrackPromo out/nutritrack-promo.mp4"
   },
   "dependencies": {
     "@remotion/cli": "4.0.0",
