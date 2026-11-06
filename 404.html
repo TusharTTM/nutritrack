@@ -49,6 +49,46 @@
     <meta name="twitter:description" content="Track meals, macros, water and habits — all in one calm, beautiful place." />
     <meta name="twitter:image" content="https://tusharttm.github.io/nutritrack/og-image.png" />
     <!-- /nutritrack:social -->
+<!-- nutritrack:browser-css -->
+    <style id="nutritrack-browser">
+      /* Selection and caret carry the brand instead of the UA blue. */
+      ::selection { background: #C6F24E; color: #0E100B; }
+      ::-moz-selection { background: #C6F24E; color: #0E100B; }
+      input, textarea, [contenteditable] { caret-color: #A3E635; }
+
+      /* Keyboard focus stays visible; pointer focus stays quiet. */
+      :focus { outline: none; }
+      :focus-visible {
+        outline: 2px solid #A3E635;
+        outline-offset: 3px;
+        border-radius: 4px;
+      }
+
+      /* One scrollbar for the whole shell, themed from the palette. */
+      * { scrollbar-color: rgba(198, 242, 78, 0.35) transparent; }
+      ::-webkit-scrollbar { width: 11px; height: 11px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(198, 242, 78, 0.28);
+        border-radius: 999px;
+        border: 3px solid transparent;
+        background-clip: content-box;
+      }
+      ::-webkit-scrollbar-thumb:hover { background: rgba(198, 242, 78, 0.45); background-clip: content-box; }
+
+      /* Underlines sit clear of the descenders, and the type renders crisply. */
+      a, [role="link"] { text-underline-offset: 3px; text-decoration-thickness: 1px; }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        overscroll-behavior-y: none;
+      }
+      /* Touch taps should not flash a highlight the design never asked for. */
+      a, button, [role="button"], [role="link"] { -webkit-tap-highlight-color: transparent; }
+    </style>
+    <!-- /nutritrack:browser-css -->
   </head>
 
   <body>
@@ -56,6 +96,6 @@
     <noscript> You need to enable JavaScript to run this app. </noscript>
     <!-- The root element for your Expo app. -->
     <div id="root"></div>
-  <script src="/nutritrack/_expo/static/js/web/__expo-metro-runtime-8c088df87a31e4e6accd81c554ec290d.js" defer></script><script src="/nutritrack/_expo/static/js/web/__common-cfcae45713daa8f0d1806ea28ca6892c.js" defer></script><script src="/nutritrack/_expo/static/js/web/entry-469c9eeb071eb7e4c5c3b4a0eaf0dcb7.js" defer></script>
+  <script src="/nutritrack/_expo/static/js/web/__expo-metro-runtime-8c088df87a31e4e6accd81c554ec290d.js" defer></script><script src="/nutritrack/_expo/static/js/web/__common-0616e10e39be9ac5fc910582be10cc88.js" defer></script><script src="/nutritrack/_expo/static/js/web/entry-8aacee04e4a59ba744f493489d72dfda.js" defer></script>
 </body>
 </html>
