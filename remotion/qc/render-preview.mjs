@@ -17,11 +17,11 @@ fs.mkdirSync(outDir, { recursive: true });
 
 const LIME = "#C6F24E", PAPER = "#F2F4EC", SUB = "#B9C0AC";
 const SAFE = { x: 240, y: 120, w: 1440, h: 840 };
-const PHONE_H = 840, PHONE_W = Math.round(840 * (430 / 884));
-const phoneX = SAFE.x + SAFE.w - PHONE_W, phoneY = SAFE.y;
+const PHONE_H = 1000, PHONE_W = Math.round(1000 * (430 / 884));
+const phoneX = SAFE.x + SAFE.w - PHONE_W, phoneY = SAFE.y + (SAFE.h - PHONE_H) / 2;
 
 // output preview geometry (16:9)
-const OW = 854, OH = 480, STEP = 5, DELAY = 83; // ~12fps over 1800 frames
+const OW = 1280, OH = 720, STEP = 5, DELAY = 83; // ~12fps over 1800 frames
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const seg = (v, a, b) => clamp((v - a) / (b - a), 0, 1);
@@ -74,6 +74,8 @@ function content(scene, index, total, local) {
     for (const ln of wrap(scene.headline, 15)) { b += T(336, y, ln, 82, 800, PAPER, "start", -2, hl.ty, hl.p); y += 86; }
     const sl = up(local, 22, 24, 30); y += 26;
     for (const ln of wrap(scene.subline, 38)) { b += T(336, y, ln, 30, 400, SUB, "start", 0, sl.ty, sl.p); y += 41; }
+    // glow behind phone so the dark app screen pops from the background
+    b += `<ellipse cx="${phoneX + PHONE_W / 2}" cy="${phoneY + PHONE_H / 2}" rx="${PHONE_W * 1.15}" ry="${PHONE_H * 0.6}" fill="url(#g1)"/>`;
     // phone (slide + pop + fade)
     const sp = eoc(seg(local - 6, 0, 26)); const slide = 90 * (1 - sp);
     const scale = 0.96 + 0.04 * eoc(seg(local - 6, 0, 30)); const pop = seg(local - 6, 0, 16);
@@ -109,7 +111,7 @@ for (let f = 0; f < spec.durationInFrames; f += STEP) {
   const res = new Resvg(svg, { fitTo: { mode: "width", value: OW } });
   const img = res.render();
   const { pixels, width, height } = img;
-  const palette = quantize(pixels, 128);
+  const palette = quantize(pixels, 256);
   const index = applyPalette(pixels, palette);
   gif.writeFrame(index, width, height, { palette, delay: DELAY });
   n++;

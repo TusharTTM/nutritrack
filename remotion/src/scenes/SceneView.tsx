@@ -53,7 +53,7 @@ export const SceneView: React.FC<{ scene: Scene; index: number; total: number }>
     return { opacity: p, transform: `translateY(${(1 - p) * dist}px)` };
   };
 
-  const phoneH = 840;
+  const phoneH = 1000;
   const phoneW = phoneH * (430 / 884);
   const phoneX = SAFE.x + SAFE.w - phoneW; // right edge of title-safe
   const phoneY = SAFE.y + (SAFE.h - phoneH) / 2;
@@ -124,6 +124,22 @@ export const SceneView: React.FC<{ scene: Scene; index: number; total: number }>
             {scene.subline}
           </div>
         </div>
+
+        {/* glow behind phone so the dark app screen pops from the background */}
+        {scene.phone && (
+          <div
+            style={{
+              position: "absolute",
+              left: phoneX - 50,
+              top: phoneY,
+              width: phoneW + 100,
+              height: phoneH,
+              background:
+                "radial-gradient(closest-side, rgba(198,242,78,0.20), transparent 72%)",
+              pointerEvents: "none",
+            }}
+          />
+        )}
 
         {/* the real app screen */}
         {scene.phone && (

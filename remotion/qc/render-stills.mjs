@@ -13,8 +13,8 @@ fs.mkdirSync(outDir, { recursive: true });
 
 const LIME = "#C6F24E", PAPER = "#F2F4EC", SUB = "#B9C0AC", MUTED = "#8A9078";
 const SAFE = { x: 240, y: 120, w: 1440, h: 840 };
-const PHONE_H = 840, PHONE_W = Math.round(840 * (430 / 884));
-const phoneX = SAFE.x + SAFE.w - PHONE_W, phoneY = SAFE.y;
+const PHONE_H = 1000, PHONE_W = Math.round(1000 * (430 / 884));
+const phoneX = SAFE.x + SAFE.w - PHONE_W, phoneY = SAFE.y + (SAFE.h - PHONE_H) / 2;
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const wrap = (t, n) => {
@@ -29,6 +29,7 @@ const aurora = `
   <defs>
     <radialGradient id="g1"><stop offset="0" stop-color="${LIME}" stop-opacity="0.16"/><stop offset="1" stop-color="${LIME}" stop-opacity="0"/></radialGradient>
     <radialGradient id="g2"><stop offset="0" stop-color="#4FD6C6" stop-opacity="0.14"/><stop offset="1" stop-color="#4FD6C6" stop-opacity="0"/></radialGradient>
+    <radialGradient id="pg"><stop offset="0" stop-color="${LIME}" stop-opacity="0.22"/><stop offset="1" stop-color="${LIME}" stop-opacity="0"/></radialGradient>
     <filter id="ds" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="30" stdDeviation="40" flood-color="#000" flood-opacity="0.55"/></filter>
   </defs>
   <rect width="1920" height="1080" fill="#0E100B"/>
@@ -69,7 +70,10 @@ function sceneSVG(scene, index, phoneCount) {
     y += 26;
     for (const ln of wrap(scene.subline, 38)) { body += T(336, y, ln, 30, 400, SUB); y += 41; }
     // phone
-    body += `<image href="public/screens/${scene.phone}" x="${phoneX}" y="${phoneY}" width="${PHONE_W}" height="${PHONE_H}" filter="url(#ds)"/>`;
+    if (scene.phone) {
+      body += `<ellipse cx="${phoneX + PHONE_W / 2}" cy="${phoneY + PHONE_H / 2}" rx="${PHONE_W / 2 + 60}" ry="${PHONE_H / 2}" fill="url(#pg)"/>`;
+      body += `<image href="public/screens/${scene.phone}" x="${phoneX}" y="${phoneY}" width="${PHONE_W}" height="${PHONE_H}" filter="url(#ds)"/>`;
+    }
     body += dots(index, phoneCount);
   }
   return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1920" height="1080" viewBox="0 0 1920 1080" font-family="Inter, Helvetica, Arial, sans-serif">${body}</svg>`;
