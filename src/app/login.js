@@ -35,7 +35,7 @@ export default function LoginScreen() {
     try {
       if (mode === 'signup') await signUpAccount({ email: cleanEmail, password, displayName });
       else await signInAccount({ email: cleanEmail, password });
-      router.replace('/');
+      router.replace('/home');
     } catch (_e) {
       setError(mode === 'signup'
         ? 'Could not create the account. That email may already be in use.'
@@ -152,7 +152,7 @@ export default function LoginScreen() {
             </View>
           </View>
 
-          <Pressable style={styles.skip} onPress={() => router.replace('/')} accessibilityRole="button">
+          <Pressable style={styles.skip} onPress={() => router.replace('/home')} accessibilityRole="button">
             <Text style={[typography.bodySmMed, { color: colors.textSecondary }]}>Skip for now</Text>
             <Ionicons name="arrow-forward" size={15} color={colors.textSecondary} style={{ marginLeft: 4 }} />
           </Pressable>

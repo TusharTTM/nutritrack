@@ -20,6 +20,31 @@ The web build uses the same NutriTrack screens and account system as the mobile 
 
 The app uses a single-page web build. The `public/_redirects` file sends direct route requests back to the app so URLs like `/login` continue to work after refresh.
 
+### Routes
+
+| Path | Screen |
+|---|---|
+| `/` | Landing page (web only; native opens the tracker directly) |
+| `/app` | Tracker entry — onboarding, or a redirect to `/home` once done |
+| `/home` | Dashboard |
+| `/nutrition`, `/progress`, `/activity`, `/profile` | Main tabs |
+| `/login` | Sign in / sign up |
+| `/community/[userId]` | A member's shared daily summaries |
+
+### Build pipeline
+
+`npm run build:web` runs `expo export --platform web` and then
+`scripts/finalize-web.mjs`, which injects the social/SEO/PWA tags (Open Graph,
+Twitter card, canonical, web manifest, apple-touch-icon) into both `index.html`
+and the SPA 404 fallback, and writes `robots.txt` and `sitemap.xml`. The
+Pages workflow runs the same finalize step after copying the 404 fallback.
+
+The 1200x630 share card (`public/og-image.png`) and the PWA icons are rendered
+from the real app mockup by `npm run og` (`scripts/build-og-card.mjs`); Expo
+does not copy `assets/` into `dist/`, so they are committed under `public/`.
+Re-run it after changing the brand or the home screen. Set `SITE_URL` when
+serving from a custom domain.
+
 ## Optional Community setup (free tier only)
 
 Community requires a shared Supabase project. It is disabled until both environment values are configured.

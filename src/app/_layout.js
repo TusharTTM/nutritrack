@@ -14,6 +14,7 @@ function RootNavigator() {
       <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
       <Stack screenOptions={{ headerShown: false, animation: 'fade', contentStyle: { backgroundColor: colors.bg } }}>
         <Stack.Screen name="index" />
+        <Stack.Screen name="app" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="community/[userId]" />
         <Stack.Screen name="login" />
