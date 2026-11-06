@@ -5,21 +5,20 @@ import Animated, { useSharedValue, useAnimatedStyle, withTiming, interpolate, Ea
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 /**
- * Drop-in replacement for TouchableOpacity/Pressable that adds a SMOOTH web
- * hover effect (eased lift + scale) plus a gentle press-scale, while keeping
- * the exact layout/style of the original element. Hover/press are animated on
- * the UI thread via Reanimated so nothing snaps.
+ * Drop-in replacement for TouchableOpacity/Pressable with a SMOOTH 3D hover:
+ * the element eases into a perspective tilt (rotateX/rotateY) + lift + scale,
+ * and a gentle press-scale — all animated on the UI thread via Reanimated.
+ * Layout/style of the original element is preserved exactly.
  */
 export default function AppTouchable({
   children, style, onPress, activeOpacity = 0.72,
-  hoverLift = -3, hoverScale = 1.03, hoverDuration = 180, disabled = false, ...rest
+  hoverLift = -3, hoverScale = 1.03, hoverDuration = 180,
+  tiltX = -6, tiltY = 4, disabled = false, ...rest
 }) {
   const [hover, setHover] = useState(false);
   const [press, setPress] = useState(false);
   const h = useSharedValue(0);
   const pr = useSharedValue(0);
-  // Map the legacy "activeOpacity" (0..1) onto a subtle press scale so it still
-  // feels responsive without clobbering any opacity set in `style`.
   const pressScale = 1 - (1 - activeOpacity) * 0.35;
 
   useEffect(() => {
@@ -31,6 +30,9 @@ export default function AppTouchable({
 
   const anim = useAnimatedStyle(() => ({
     transform: [
+      { perspective: 800 },
+      { rotateX: `${interpolate(h.value, [0, 1], [0, tiltX])}deg` },
+      { rotateY: `${interpolate(h.value, [0, 1], [0, tiltY])}deg` },
       { translateY: interpolate(h.value, [0, 1], [0, hoverLift]) },
       { scale: interpolate(h.value, [0, 1], [1, hoverScale]) * interpolate(pr.value, [0, 1], [1, pressScale]) },
     ],

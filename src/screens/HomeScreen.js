@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   View, Text, StyleSheet, Pressable,
   SafeAreaView, StatusBar, Modal, TextInput, FlatList, useWindowDimensions, Alert } from 'react-native';
@@ -9,7 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
   FadeIn, FadeInDown, FadeOut, LinearTransition, useReducedMotion,
   useSharedValue, useAnimatedStyle, useAnimatedScrollHandler, interpolate,
-  withRepeat, withTiming, withSpring, Easing,
+  withRepeat, withTiming, Easing,
 } from 'react-native-reanimated';
 import { useApp } from '../context/AppContext';
 import CalorieRing from '../components/CalorieRing';
@@ -447,44 +447,14 @@ export default function HomeScreen() {
   );
 }
 
-// ── Hover + press interaction (web hover lift, springy press) ──────────────
-function Hoverable({ children, style, onPress, accessibilityLabel, lift = -4, scale = 1.02, activeScale = 0.99 }) {
-  const [hover, setHover] = useState(false);
-  const [press, setPress] = useState(false);
-  const h = useSharedValue(0);
-  const p = useSharedValue(1);
-  useEffect(() => { h.value = withTiming(hover ? 1 : 0, { duration: 180, easing: Easing.out(Easing.cubic) }); }, [hover, h]);
-  useEffect(() => { p.value = withSpring(press ? activeScale : 1, { damping: 16, stiffness: 280 }); }, [press, p, activeScale]);
-  const anim = useAnimatedStyle(() => ({
-    transform: [
-      { translateY: interpolate(h.value, [0, 1], [0, lift]) },
-      { scale: interpolate(h.value, [0, 1], [1, scale]) * p.value },
-    ],
-  }));
-  return (
-    <Pressable
-      onPress={onPress}
-      onHoverIn={() => setHover(true)}
-      onHoverOut={() => setHover(false)}
-      onPressIn={() => setPress(true)}
-      onPressOut={() => setPress(false)}
-      accessibilityLabel={accessibilityLabel}
-      accessibilityRole={onPress ? 'button' : 'none'}
-      style={{ alignSelf: 'stretch' }}
-    >
-      <Animated.View style={[anim, style]}>{children}</Animated.View>
-    </Pressable>
-  );
-}
-
-// ── Editorial hero (dark ink panel + vivid lime) ───────────────────────────
+// ── Editorial hero (dark ink panel + vivid lime, 3D tilt) ──────────────────
 const HERO = { ink: '#0E100B', ink2: '#161A10', lime: '#C6F24E', paper: '#F2F4EC', sub: '#B9C0AC', teal: '#4FD6C6' };
 function HeroBanner({ greeting, streak, onLogMeal, onProgress }) {
   const { width } = useWindowDimensions();
   const heroSize = Math.max(38, Math.min(52, Math.round(width * 0.115)));
   const titleLine = { fontSize: heroSize, lineHeight: heroSize * 1.03 };
 
-  // Ambient loops: pulsing glow, floating deco ring, CTA shimmer sweep.
+  // Ambient loops: pulsing glow, 3D-floating deco ring, CTA shimmer sweep.
   const pulse = useSharedValue(0);
   const float = useSharedValue(0);
   const shimmer = useSharedValue(0);
@@ -500,15 +470,46 @@ function HeroBanner({ greeting, streak, onLogMeal, onProgress }) {
   const ringAnim = useAnimatedStyle(() => ({
     transform: [
       { translateY: interpolate(float.value, [0, 1], [0, 12]) },
-      { rotate: interpolate(float.value, [0, 1], ['0deg', '12deg']) },
+      { rotateZ: `${interpolate(float.value, [0, 1], [0, 12])}deg` },
+      { rotateY: `${interpolate(float.value, [0, 1], [-16, 16])}deg` },
     ],
   }));
   const shimmerAnim = useAnimatedStyle(() => ({
     transform: [{ translateX: interpolate(shimmer.value, [0, 1], [-170, 280]) }, { rotate: '18deg' }],
   }));
 
+  // 3D mouse-follow tilt of the whole panel.
+  const box = useRef({ w: 0, h: 0 });
+  const [tilt, setTilt] = useState(null);
+  const rotX = useSharedValue(0);
+  const rotY = useSharedValue(0);
+  useEffect(() => {
+    rotX.value = withTiming(tilt ? -tilt.y * 7 : 0, { duration: 240, easing: Easing.out(Easing.cubic) });
+    rotY.value = withTiming(tilt ? tilt.x * 8 : 0, { duration: 240, easing: Easing.out(Easing.cubic) });
+  }, [tilt, rotX, rotY]);
+  const tiltAnim = useAnimatedStyle(() => ({
+    transform: [
+      { perspective: 1200 },
+      { rotateX: `${rotX.value}deg` },
+      { rotateY: `${rotY.value}deg` },
+    ],
+  }));
+  const onMove = useCallback((e) => {
+    const ne = e.nativeEvent;
+    const lx = ne.locationX != null ? ne.locationX : ne.offsetX;
+    const ly = ne.locationY != null ? ne.locationY : ne.offsetY;
+    const { w, h } = box.current;
+    if (w && h && lx != null && ly != null) setTilt({ x: lx / w - 0.5, y: ly / h - 0.5 });
+  }, []);
+  const onLeave = useCallback(() => setTilt(null), []);
+
   return (
-    <View style={styles.hero}>
+    <Animated.View
+      style={[styles.hero, tiltAnim]}
+      onLayout={(e) => { const l = e.nativeEvent.layout; box.current = { w: l.width, h: l.height }; }}
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+    >
       <LinearGradient
         pointerEvents="none"
         colors={[HERO.ink, HERO.ink2]}
@@ -542,7 +543,7 @@ function HeroBanner({ greeting, streak, onLogMeal, onProgress }) {
       </Text>
 
       <View style={styles.heroCtas}>
-        <Hoverable onPress={onLogMeal} style={styles.heroCtaPrimary} accessibilityLabel="Log a meal" lift={-3} scale={1.03}>
+        <AppTouchable onPress={onLogMeal} style={styles.heroCtaPrimary} accessibilityLabel="Log a meal" tiltX={0} tiltY={0}>
           <LinearGradient
             colors={['#D4F75E', '#A8D62E']}
             start={{ x: 0, y: 0 }}
@@ -560,19 +561,19 @@ function HeroBanner({ greeting, streak, onLogMeal, onProgress }) {
             <Ionicons name="add-circle" size={19} color={HERO.ink} />
             <Text style={[typography.bodyMed, { color: HERO.ink, marginLeft: 7 }]}>Log a meal</Text>
           </LinearGradient>
-        </Hoverable>
-        <Hoverable
+        </AppTouchable>
+        <AppTouchable
           onPress={onProgress}
           style={[styles.heroCtaSecondary, { borderColor: HERO.lime + '59', backgroundColor: HERO.lime + '14' }]}
           accessibilityLabel="View progress"
-          lift={-3}
-          scale={1.03}
+          tiltX={0}
+          tiltY={0}
         >
           <Text style={[typography.bodyMed, { color: HERO.lime }]}>View progress</Text>
           <Ionicons name="arrow-forward" size={16} color={HERO.lime} style={{ marginLeft: 6 }} />
-        </Hoverable>
+        </AppTouchable>
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
