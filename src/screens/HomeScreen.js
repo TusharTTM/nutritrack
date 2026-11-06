@@ -543,7 +543,7 @@ function HeroBanner({ greeting, streak, onLogMeal, onProgress }) {
       </Text>
 
       <View style={styles.heroCtas}>
-        <AppTouchable onPress={onLogMeal} style={styles.heroCtaPrimary} accessibilityLabel="Log a meal" tiltX={0} tiltY={0}>
+        <AppTouchable onPress={onLogMeal} style={styles.heroCtaPrimary} accessibilityLabel="Log a meal">
           <LinearGradient
             colors={['#D4F75E', '#A8D62E']}
             start={{ x: 0, y: 0 }}
@@ -566,8 +566,6 @@ function HeroBanner({ greeting, streak, onLogMeal, onProgress }) {
           onPress={onProgress}
           style={[styles.heroCtaSecondary, { borderColor: HERO.lime + '59', backgroundColor: HERO.lime + '14' }]}
           accessibilityLabel="View progress"
-          tiltX={0}
-          tiltY={0}
         >
           <Text style={[typography.bodyMed, { color: HERO.lime }]}>View progress</Text>
           <Ionicons name="arrow-forward" size={16} color={HERO.lime} style={{ marginLeft: 6 }} />
