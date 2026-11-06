@@ -9,6 +9,13 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const spec = JSON.parse(fs.readFileSync(path.join(root, "src/spec.json"), "utf8"));
 const outDir = path.join(root, "out");
+
+// Inter (static weights 400-800) is vendored so the QC renders match the
+// mockups' typography instead of falling back to a generic system sans.
+const FONT_FILES = fs
+  .readdirSync(path.join(root, "qc/fonts"))
+  .filter((f) => f.endsWith(".ttf"))
+  .map((f) => path.join(root, "qc/fonts", f));
 fs.mkdirSync(outDir, { recursive: true });
 
 const LIME = "#C6F24E", PAPER = "#F2F4EC", SUB = "#B9C0AC", MUTED = "#8A9078";
@@ -35,6 +42,22 @@ const aurora = `
   <rect width="1920" height="1080" fill="#0E100B"/>
   <ellipse cx="230" cy="90" rx="900" ry="700" fill="url(#g1)"/>
   <ellipse cx="1770" cy="1040" rx="1000" ry="820" fill="url(#g2)"/>`;
+
+// resvg drops <text> when an SVG is embedded via <image href>, so the screen
+// markup is inlined into the parent tree (ids namespaced to avoid collisions).
+const inlineScreen = (relPath, x, y, w) => {
+  let s = fs.readFileSync(path.join(root, relPath), "utf8");
+  const vb = /viewBox="([^"]+)"/.exec(s);
+  const vbW = Number(vb[1].split(/[\s,]+/)[2]);
+  const scale = w / vbW;
+  const ff = /font-family:\s*([^;"]+)/.exec(s);
+  const fontFamily = ff ? ff[1].trim() : "Helvetica, Arial, sans-serif";
+  s = s
+    .replace(/\bid="([^"]+)"/g, 'id="sc_$1"')
+    .replace(/url\(#([^)]+)\)/g, "url(#sc_$1)");
+  s = s.replace(/<svg\b[^>]*>/, "").replace(/<\/svg>\s*$/, "");
+  return `<g filter="url(#ds)"><g transform="translate(${x},${y}) scale(${scale})" font-family="${fontFamily}">${s}</g></g>`;
+};
 
 const leaf = (cx, cy, size, color) => {
   const s = size / 24;
@@ -72,7 +95,7 @@ function sceneSVG(scene, index, phoneCount) {
     // phone
     if (scene.phone) {
       body += `<ellipse cx="${phoneX + PHONE_W / 2}" cy="${phoneY + PHONE_H / 2}" rx="${PHONE_W / 2 + 60}" ry="${PHONE_H / 2}" fill="url(#pg)"/>`;
-      body += `<image href="public/screens/${scene.phone}" x="${phoneX}" y="${phoneY}" width="${PHONE_W}" height="${PHONE_H}" filter="url(#ds)"/>`;
+      body += inlineScreen(`public/screens/${scene.phone}`, phoneX, phoneY, PHONE_W);
     }
     body += dots(index, phoneCount);
   }
@@ -83,7 +106,11 @@ const phoneScenes = spec.scenes.filter((s) => s.phone);
 for (const scene of spec.scenes) {
   const index = scene.phone ? spec.scenes.slice(0, spec.scenes.indexOf(scene)).filter((s) => s.phone).length : 0;
   const svg = sceneSVG(scene, index, phoneScenes.length);
-  const r = new Resvg(svg, { fitTo: { mode: "width", value: 1920 }, background: "#0E100B" });
+  const r = new Resvg(svg, {
+    fitTo: { mode: "width", value: 1920 },
+    background: "#0E100B",
+    font: { fontFiles: FONT_FILES, loadSystemFonts: true },
+  });
   const png = r.render().asPng();
   const f = path.join(outDir, `still-${scene.id}.png`);
   fs.writeFileSync(f, png);

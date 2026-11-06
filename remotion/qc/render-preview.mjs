@@ -13,6 +13,34 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const spec = JSON.parse(fs.readFileSync(path.join(root, "src/spec.json"), "utf8"));
 const outDir = path.join(root, "out");
+
+// Inter (static weights 400-800) is vendored so the QC renders match the
+// mockups' typography instead of falling back to a generic system sans.
+const FONT_FILES = fs
+  .readdirSync(path.join(root, "qc/fonts"))
+  .filter((f) => f.endsWith(".ttf"))
+  .map((f) => path.join(root, "qc/fonts", f));
+
+// resvg silently drops <text> when an SVG is embedded via <image href>, so the
+// screen markup is inlined into the parent tree instead (ids namespaced).
+const screenCache = new Map();
+const inlineScreen = (relPath, x, y, w) => {
+  const key = `${relPath}|${x}|${y}|${w}`;
+  if (screenCache.has(key)) return screenCache.get(key);
+  let s = fs.readFileSync(path.join(root, relPath), "utf8");
+  const vb = /viewBox="([^"]+)"/.exec(s);
+  const vbW = Number(vb[1].split(/[\s,]+/)[2]);
+  const scale = w / vbW;
+  const ff = /font-family:\s*([^;"]+)/.exec(s);
+  const fontFamily = ff ? ff[1].trim() : "Helvetica, Arial, sans-serif";
+  s = s
+    .replace(/\bid="([^"]+)"/g, 'id="sc_$1"')
+    .replace(/url\(#([^)]+)\)/g, "url(#sc_$1)");
+  s = s.replace(/<svg\b[^>]*>/, "").replace(/<\/svg>\s*$/, "");
+  const out = `<g filter="url(#ds)"><g transform="translate(${x},${y}) scale(${scale})" font-family="${fontFamily}">${s}</g></g>`;
+  screenCache.set(key, out);
+  return out;
+};
 fs.mkdirSync(outDir, { recursive: true });
 
 const LIME = "#C6F24E", PAPER = "#F2F4EC", SUB = "#B9C0AC";
@@ -81,7 +109,7 @@ function content(scene, index, total, local) {
     const scale = 0.96 + 0.04 * eoc(seg(local - 6, 0, 30)); const pop = seg(local - 6, 0, 16);
     b += `<g opacity="${pop.toFixed(3)}" transform="translate(${phoneX + slide},${phoneY})">
       <g transform="translate(${PHONE_W / 2},${PHONE_H / 2}) scale(${scale.toFixed(3)}) translate(${-PHONE_W / 2},${-PHONE_H / 2})">
-        <image href="public/screens/${scene.phone}" x="0" y="0" width="${PHONE_W}" height="${PHONE_H}" filter="url(#ds)"/></g></g>`;
+        ${inlineScreen(`public/screens/${scene.phone}`, 0, 0, PHONE_W)}</g></g>`;
     // dots
     const dw = total * 22 - 12; let dx = 960 - dw / 2; const dy = SAFE.y + SAFE.h - 24;
     for (let i = 0; i < total; i++) { const on = i === index; const ww = on ? 30 : 10; b += `<rect x="${dx}" y="${dy - 5}" width="${ww}" height="10" rx="5" fill="${on ? LIME : "rgba(242,244,236,0.25)"}"/>`; dx += ww + 12; }
@@ -108,7 +136,10 @@ const gif = GIFEncoder();
 let n = 0;
 for (let f = 0; f < spec.durationInFrames; f += STEP) {
   const svg = frameSVG(f);
-  const res = new Resvg(svg, { fitTo: { mode: "width", value: OW } });
+  const res = new Resvg(svg, {
+    fitTo: { mode: "width", value: OW },
+    font: { fontFiles: FONT_FILES, loadSystemFonts: true },
+  });
   const img = res.render();
   const { pixels, width, height } = img;
   const palette = quantize(pixels, 256);
