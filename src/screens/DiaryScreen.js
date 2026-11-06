@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  SafeAreaView, StatusBar
+  View, Text, StyleSheet, ScrollView, SafeAreaView, StatusBar
 } from 'react-native';
+import AppTouchable from '../components/AppTouchable';
 import { useApp } from '../context/AppContext';
 import { colors, spacing, radius, shadow, typography } from '../utils/theme';
 import { mealTypes } from '../data/foods';
@@ -53,7 +53,7 @@ export default function DiaryScreen() {
             const dayLogs = getLogsForDate(date);
             const hasFoods = Object.values(dayLogs).flat().length > 0;
             return (
-              <TouchableOpacity
+              <AppTouchable
                 key={date}
                 style={[styles.dateChip, isSelected && styles.dateChipActive]}
                 onPress={() => setSelectedDate(date)}
@@ -66,7 +66,7 @@ export default function DiaryScreen() {
                 </Text>
                 {hasFoods && <View style={[styles.dot, isSelected && styles.dotActive]} />}
                 {isToday && !isSelected && <Text style={styles.todayLabel}>Today</Text>}
-              </TouchableOpacity>
+              </AppTouchable>
             );
           })}
         </ScrollView>

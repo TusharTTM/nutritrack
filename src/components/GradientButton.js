@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { Text, StyleSheet, ActivityIndicator } from 'react-native';
+import AppTouchable from './AppTouchable';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../context/AppContext';
@@ -33,7 +34,7 @@ export default function GradientButton({
 
   if (disabled) {
     return (
-      <TouchableOpacity
+      <AppTouchable
         onPress={onPress}
         disabled
         accessibilityRole="button"
@@ -41,12 +42,12 @@ export default function GradientButton({
         style={[styles.btn, styles.muted, { paddingVertical: pad, backgroundColor: colors.cardBorder, borderRadius: radius.xl }, full && styles.full, style]}
       >
         <Text numberOfLines={1} style={[styles.label, { fontSize, color: colors.textMuted }, textStyle]}>{label}</Text>
-      </TouchableOpacity>
+      </AppTouchable>
     );
   }
 
   return (
-    <TouchableOpacity
+    <AppTouchable
       onPress={onPress}
       activeOpacity={0.85}
       accessibilityRole="button"
@@ -60,7 +61,7 @@ export default function GradientButton({
         style={StyleSheet.absoluteFillObject}
       />
       {content}
-    </TouchableOpacity>
+    </AppTouchable>
   );
 }
 

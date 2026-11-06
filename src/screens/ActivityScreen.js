@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  SafeAreaView, StatusBar, Modal, TextInput, Alert,
-  useWindowDimensions,
-} from 'react-native';
+  View, Text, StyleSheet, ScrollView, SafeAreaView, StatusBar, Modal, TextInput, Alert,
+  useWindowDimensions } from 'react-native';
+import AppTouchable from '../components/AppTouchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../context/AppContext';
 import Card from '../components/Card';
@@ -73,7 +72,7 @@ export default function ActivityScreen() {
 
         {/* Header */}
         <ScreenHeader title="Activity">
-          <TouchableOpacity
+          <AppTouchable
             style={[styles.addBtn, { backgroundColor: colors.primary }]}
             onPress={() => { setSelectedActivity(null); setDuration('30'); setAddModal(true); }}
             accessibilityRole="button"
@@ -81,7 +80,7 @@ export default function ActivityScreen() {
           >
             <Ionicons name="add" size={18} color={colors.textInverse} />
             <Text style={[typography.bodyMed, { color: colors.textInverse, marginLeft: 4 }]}>Log</Text>
-          </TouchableOpacity>
+          </AppTouchable>
         </ScreenHeader>
 
         {/* Summary row */}
@@ -123,13 +122,13 @@ export default function ActivityScreen() {
                     <Text style={[typography.h3, { color: colors.warning }]}>{activity.caloriesBurned}</Text>
                     <Text style={[typography.micro, { color: colors.textMuted }]}>kcal</Text>
                   </View>
-                  <TouchableOpacity
+                  <AppTouchable
                     onPress={() => confirmRemove(activity.id)}
                     hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
                     style={{ marginLeft: spacing.sm }}
                   >
                     <Ionicons name="trash-outline" size={16} color={colors.textMuted} />
-                  </TouchableOpacity>
+                  </AppTouchable>
                 </View>
               </Card>
             ))
@@ -142,7 +141,7 @@ export default function ActivityScreen() {
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs, paddingBottom: spacing.sm }}>
             {actCategories.map(cat => (
-              <TouchableOpacity
+              <AppTouchable
                 key={cat}
                 style={[styles.catPill, {
                   backgroundColor: activeCategory === cat ? colors.primary : colors.card,
@@ -153,7 +152,7 @@ export default function ActivityScreen() {
                 <Text style={[typography.micro, { color: activeCategory === cat ? colors.textInverse : colors.textSecondary }]}>
                   {cat}
                 </Text>
-              </TouchableOpacity>
+              </AppTouchable>
             ))}
           </ScrollView>
 
@@ -161,7 +160,7 @@ export default function ActivityScreen() {
             {filteredActivities.map(act => {
               const est = calcActivityCalories(act.metValue, weightKg, 30);
               return (
-                <TouchableOpacity
+                <AppTouchable
                   key={act.id}
                   style={[styles.actGridCard, { width: (width - spacing.md * 2 - spacing.sm * (gridColumns - 1)) / gridColumns, backgroundColor: colors.card, borderColor: colors.cardBorder }]}
                   onPress={() => { setSelectedActivity(act); setDuration('30'); setAddModal(true); }}
@@ -169,7 +168,7 @@ export default function ActivityScreen() {
                   <ActivityIcon name={act.name} category={act.category} size={30} />
                   <Text numberOfLines={2} style={[typography.caption, { color: colors.text, marginTop: 6, textAlign: 'center', flexShrink: 1 }]}>{act.name}</Text>
                   <Text style={[typography.micro, { color: colors.textMuted, marginTop: 2 }]}>~{est}/30m</Text>
-                </TouchableOpacity>
+                </AppTouchable>
               );
             })}
           </View>
@@ -190,13 +189,13 @@ export default function ActivityScreen() {
       <Modal visible={addModal} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={[styles.modal, { backgroundColor: colors.bg }]}>
           <View style={[styles.modalHeader, { borderBottomColor: colors.cardBorder }]}>
-            <TouchableOpacity onPress={() => { setAddModal(false); setSelectedActivity(null); }}>
+            <AppTouchable onPress={() => { setAddModal(false); setSelectedActivity(null); }}>
               <Text style={[typography.bodyMed, { color: colors.textSecondary }]}>Cancel</Text>
-            </TouchableOpacity>
+            </AppTouchable>
             <Text style={[typography.h3, { color: colors.text }]}>Log Activity</Text>
-            <TouchableOpacity onPress={handleAdd} disabled={!selectedActivity}>
+            <AppTouchable onPress={handleAdd} disabled={!selectedActivity}>
               <Text style={[typography.bodyMed, { color: selectedActivity ? colors.primary : colors.textMuted }]}>Save</Text>
-            </TouchableOpacity>
+            </AppTouchable>
           </View>
 
           <ScrollView contentContainerStyle={{ padding: spacing.md, gap: spacing.lg }}>
@@ -204,7 +203,7 @@ export default function ActivityScreen() {
             <Text style={[typography.h4, { color: colors.textSecondary }]}>Select Activity</Text>
             <View style={styles.actPickerGrid}>
               {activityDatabase.map(act => (
-                <TouchableOpacity
+                <AppTouchable
                   key={act.id}
                   style={[styles.actPickerItem, { width: (width - spacing.md * 2 - spacing.sm * (gridColumns - 1)) / gridColumns,
                     backgroundColor: selectedActivity?.id === act.id ? colors.primarySurface : colors.card,
@@ -217,7 +216,7 @@ export default function ActivityScreen() {
                     color: selectedActivity?.id === act.id ? colors.primaryLight : colors.textSecondary,
                     textAlign: 'center', marginTop: 4,
                   }]}>{act.name}</Text>
-                </TouchableOpacity>
+                </AppTouchable>
               ))}
             </View>
 
@@ -240,7 +239,7 @@ export default function ActivityScreen() {
               <Text style={[typography.bodySmMed, { color: colors.textSecondary, marginBottom: spacing.sm }]}>Duration</Text>
               <View style={styles.durationRow}>
                 {[15, 30, 45, 60, 90].map(d => (
-                  <TouchableOpacity
+                  <AppTouchable
                     key={d}
                     style={[styles.durChip, {
                       backgroundColor: duration === String(d) ? colors.primary : colors.card,
@@ -249,7 +248,7 @@ export default function ActivityScreen() {
                     onPress={() => setDuration(String(d))}
                   >
                     <Text style={[typography.bodySmMed, { color: duration === String(d) ? colors.textInverse : colors.textSecondary }]}>{d}m</Text>
-                  </TouchableOpacity>
+                  </AppTouchable>
                 ))}
                 <TextInput
                   style={[styles.durInput, { color: colors.text, backgroundColor: colors.card, borderColor: colors.cardBorder }]}

@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Pressable,
-  ScrollView, StyleSheet, Switch, Text, TextInput, View,
-} from 'react-native';
+  ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import AppTouchable from './AppTouchable';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useApp } from '../context/AppContext';
@@ -243,9 +242,9 @@ export default function CommunityReports() {
         </Text>
         {notice ? <Notice message={notice} colors={colors} /> : null}
         <Action label={authBusy ? 'Please wait…' : register ? 'Create account' : 'Sign in'} onPress={authenticate} disabled={authBusy} colors={colors} />
-        <Pressable style={styles.link} onPress={() => { setRegister(v => !v); setNotice(''); }} accessibilityRole="button">
+        <AppTouchable style={styles.link} onPress={() => { setRegister(v => !v); setNotice(''); }} accessibilityRole="button">
           <Text style={[typography.bodySmMed, { color: colors.primary }]}>{register ? 'Already registered? Sign in' : 'Create a Community account'}</Text>
-        </Pressable>
+        </AppTouchable>
       </Card>
     </ScrollView>
   </KeyboardAvoidingView>;
@@ -260,7 +259,7 @@ export default function CommunityReports() {
         <Text style={[typography.h2, { color: colors.text }]}>Your group</Text>
         <Text numberOfLines={1} style={[typography.caption, { color: colors.textMuted, marginTop: 3 }]}>{session.user.email}</Text>
       </View>
-      <Pressable onPress={async () => {
+      <AppTouchable onPress={async () => {
         setAuthBusy(true);
         try { await signOutOfCommunity(); setRequests([]); setPassword(''); }
         catch (_error) { setNotice('Could not sign out. Try again.'); }
@@ -268,7 +267,7 @@ export default function CommunityReports() {
       }} disabled={authBusy} accessibilityRole="button" accessibilityLabel="Log out" style={[styles.logoutButton, { borderColor: colors.cardBorder, opacity: authBusy ? 0.6 : 1 }]}>
         <Ionicons name="log-out-outline" size={18} color={colors.textSecondary} />
         <Text style={[typography.caption, { color: colors.textSecondary }]}>Log out</Text>
-      </Pressable>
+      </AppTouchable>
     </View>
 
     <Card style={styles.sharingCard} elevated>
@@ -284,10 +283,10 @@ export default function CommunityReports() {
     {notice ? <Notice message={notice} colors={colors} /> : null}
     <View style={styles.sectionTitle}>
       <Text style={[typography.h4, { color: colors.text }]}>People</Text>
-      <Pressable style={[styles.addButton, { backgroundColor: colors.primarySurface }]} onPress={() => { setShowAdd(v => !v); setMatches([]); setNotice(''); }} accessibilityRole="button">
+      <AppTouchable style={[styles.addButton, { backgroundColor: colors.primarySurface }]} onPress={() => { setShowAdd(v => !v); setMatches([]); setNotice(''); }} accessibilityRole="button">
         <Ionicons name={showAdd ? 'close' : 'person-add-outline'} size={16} color={colors.primary} />
         <Text style={[typography.caption, { color: colors.primary, marginLeft: 5 }]}>{showAdd ? 'Close' : 'Add person'}</Text>
-      </Pressable>
+      </AppTouchable>
     </View>
 
     {showAdd && <Card style={styles.addCard}>
@@ -317,8 +316,8 @@ export default function CommunityReports() {
             <Text numberOfLines={1} style={[typography.bodySmMed, { color: colors.text }]}>{otherMember(r, session.user.id).name}</Text>
             <Text style={[typography.caption, { color: colors.textMuted }]}>Wants to join your group</Text>
           </View>
-          <Pressable style={[styles.smallOutline, { borderColor: colors.cardBorder }]} onPress={() => reply(r.request_id, false)} accessibilityRole="button"><Text style={[typography.caption, { color: colors.textSecondary }]}>Decline</Text></Pressable>
-          <Pressable style={[styles.acceptButton, { backgroundColor: colors.primary }]} onPress={() => reply(r.request_id, true)} accessibilityRole="button"><Text style={[typography.caption, { color: colors.textInverse }]}>Accept</Text></Pressable>
+          <AppTouchable style={[styles.smallOutline, { borderColor: colors.cardBorder }]} onPress={() => reply(r.request_id, false)} accessibilityRole="button"><Text style={[typography.caption, { color: colors.textSecondary }]}>Decline</Text></AppTouchable>
+          <AppTouchable style={[styles.acceptButton, { backgroundColor: colors.primary }]} onPress={() => reply(r.request_id, true)} accessibilityRole="button"><Text style={[typography.caption, { color: colors.textInverse }]}>Accept</Text></AppTouchable>
         </View>
       </Card>)}
     </Section>}
@@ -340,15 +339,15 @@ export default function CommunityReports() {
         members.length === 0 ? <EmptyState icon="people-outline" title="Your group is empty" subtitle="Add someone by their exact name. Their reports appear after they accept and enable sharing." /> :
         members.map(member => <Card key={member.id} style={styles.memberCard} elevated>
           <View style={styles.memberRow}>
-            <Pressable style={[styles.memberPress, styles.flex]} onPress={() => router.push({ pathname: '/community/[userId]', params: { userId: member.id } })} accessibilityRole="button" accessibilityLabel={'View ' + member.name + ' report'}>
+            <AppTouchable style={[styles.memberPress, styles.flex]} onPress={() => router.push({ pathname: '/community/[userId]', params: { userId: member.id } })} accessibilityRole="button" accessibilityLabel={'View ' + member.name + ' report'}>
               <Avatar name={member.name} colors={colors} />
               <View style={[styles.flex, { marginHorizontal: spacing.sm }]}>
                 <Text numberOfLines={1} style={[typography.bodySmMed, { color: colors.text }]}>{member.name}</Text>
                 <Text style={[typography.caption, { color: colors.textMuted }]}>View shared report</Text>
               </View>
               <Ionicons name="chevron-forward" size={17} color={colors.textMuted} />
-            </Pressable>
-            <Pressable onPress={() => remove(member)} hitSlop={8} accessibilityRole="button" accessibilityLabel={'Remove ' + member.name} style={styles.removeButton}><Ionicons name="person-remove-outline" size={18} color={colors.textMuted} /></Pressable>
+            </AppTouchable>
+            <AppTouchable onPress={() => remove(member)} hitSlop={8} accessibilityRole="button" accessibilityLabel={'Remove ' + member.name} style={styles.removeButton}><Ionicons name="person-remove-outline" size={18} color={colors.textMuted} /></AppTouchable>
           </View>
         </Card>)
       }
@@ -359,21 +358,21 @@ export default function CommunityReports() {
       </Text>
       {adminProfiles.length === 0 ? <EmptyState icon="clipboard-outline" title="No Community accounts yet" subtitle="New accounts will appear here." /> :
         adminProfiles.map(person => <Card key={person.user_id} style={styles.memberCard} elevated>
-          <Pressable style={styles.memberRow} onPress={() => router.push({ pathname: '/community/[userId]', params: { userId: person.user_id } })} accessibilityRole="button" accessibilityLabel={'View admin report for ' + person.display_name}>
+          <AppTouchable style={styles.memberRow} onPress={() => router.push({ pathname: '/community/[userId]', params: { userId: person.user_id } })} accessibilityRole="button" accessibilityLabel={'View admin report for ' + person.display_name}>
             <Avatar name={person.display_name} colors={colors} />
             <View style={[styles.flex, { marginHorizontal: spacing.sm }]}>
               <Text numberOfLines={1} style={[typography.bodySmMed, { color: colors.text }]}>{person.display_name}</Text>
               <Text style={[typography.caption, { color: colors.textMuted }]}>{person.share_reports ? 'Sharing enabled · view summary' : 'Sharing off · no stored summary'}</Text>
             </View>
             <Ionicons name="chevron-forward" size={17} color={colors.textMuted} />
-          </Pressable>
+          </AppTouchable>
         </Card>)
       }
     </Section>}
-    <Pressable onPress={refresh} disabled={busy} style={styles.refresh} accessibilityRole="button">
+    <AppTouchable onPress={refresh} disabled={busy} style={styles.refresh} accessibilityRole="button">
       {busy ? <ActivityIndicator size="small" color={colors.primary} /> : <Ionicons name="refresh-outline" size={16} color={colors.primary} />}
       <Text style={[typography.caption, { color: colors.primary, marginLeft: 6 }]}>Refresh group</Text>
-    </Pressable>
+    </AppTouchable>
   </ScrollView>;
 }
 
@@ -385,9 +384,9 @@ function Field({ label, colors, ...props }) {
 }
 
 function Action({ label, onPress, disabled, colors, compact }) {
-  return <Pressable onPress={onPress} disabled={disabled} accessibilityRole="button" style={[styles.action, compact && styles.compactAction, { backgroundColor: disabled ? colors.cardBorder : colors.primary }]}>
+  return <AppTouchable onPress={onPress} disabled={disabled} accessibilityRole="button" style={[styles.action, compact && styles.compactAction, { backgroundColor: disabled ? colors.cardBorder : colors.primary }]}>
     <Text style={[typography.bodySmMed, { color: disabled ? colors.textMuted : colors.textInverse }]}>{label}</Text>
-  </Pressable>;
+  </AppTouchable>;
 }
 
 function Avatar({ name, colors }) {

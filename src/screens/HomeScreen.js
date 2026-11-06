@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity, Pressable,
-  SafeAreaView, StatusBar, Modal, TextInput, FlatList, useWindowDimensions, Alert,
-} from 'react-native';
+  View, Text, StyleSheet, Pressable,
+  SafeAreaView, StatusBar, Modal, TextInput, FlatList, useWindowDimensions, Alert } from 'react-native';
+import AppTouchable from '../components/AppTouchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -164,7 +164,7 @@ export default function HomeScreen() {
                   <Text style={[typography.micro, { color: colors.primaryLight }]}>{streak} day streak</Text>
                 </View>
               )}
-              <TouchableOpacity
+              <AppTouchable
                 style={[styles.avatarBtn, { backgroundColor: colors.primarySurface, borderColor: colors.primary + '55' }]}
                 onPress={() => router.navigate('/profile')}
                 accessibilityRole="button"
@@ -173,7 +173,7 @@ export default function HomeScreen() {
                 {initials
                   ? <Text style={[typography.h4, { color: colors.primaryLight }]}>{initials}</Text>
                   : <Ionicons name="person" size={18} color={colors.primary} />}
-              </TouchableOpacity>
+              </AppTouchable>
             </View>
           </Animated.View>
         </Animated.View>
@@ -251,14 +251,14 @@ export default function HomeScreen() {
           })}
         </View>
 
-        <PressScale
+        <AppTouchable
           onPress={() => { setMealEditorError(''); setMealEditor({ mode: 'add', original: null, value: '' }); }}
           style={[styles.addMealBtn, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
           accessibilityLabel="Add another meal"
         >
           <Ionicons name="add-circle-outline" size={20} color={colors.primary} />
           <Text style={[typography.bodyMed, { color: colors.primary, marginLeft: spacing.sm }]}>Add another meal</Text>
-        </PressScale>
+        </AppTouchable>
 
         <View style={{ height: 100 }} />
       </Animated.ScrollView>
@@ -267,13 +267,13 @@ export default function HomeScreen() {
       <Modal visible={foodModal} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={[styles.modal, { backgroundColor: colors.bg }]}>
           <View style={[styles.modalHeader, { borderBottomColor: colors.cardBorder }]}>
-            <TouchableOpacity onPress={() => setFoodModal(false)}>
+            <AppTouchable onPress={() => setFoodModal(false)}>
               <Text style={[typography.bodyMed, { color: colors.textSecondary }]}>Cancel</Text>
-            </TouchableOpacity>
+            </AppTouchable>
             <Text style={[typography.h3, { color: colors.text }]}>Add to {selectedMeal}</Text>
-            <TouchableOpacity onPress={handleAdd} disabled={!selectedFood}>
+            <AppTouchable onPress={handleAdd} disabled={!selectedFood}>
               <Text style={[typography.bodyMed, { color: selectedFood ? colors.primary : colors.textMuted }]}>Add</Text>
-            </TouchableOpacity>
+            </AppTouchable>
           </View>
 
           <View style={[styles.searchRow, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
@@ -286,9 +286,9 @@ export default function HomeScreen() {
               onChangeText={setSearch}
             />
             {search.length > 0 && (
-              <TouchableOpacity onPress={() => setSearch('')}>
+              <AppTouchable onPress={() => setSearch('')}>
                 <Ionicons name="close-circle" size={16} color={colors.textMuted} />
-              </TouchableOpacity>
+              </AppTouchable>
             )}
           </View>
 
@@ -322,21 +322,21 @@ export default function HomeScreen() {
                   <Text style={[typography.h4, { color: colors.primaryLight }]}>{selectedFood.name}</Text>
                   <Text style={[typography.bodySm, { color: colors.textSecondary, marginTop: 2 }]}>{selectedFood.serving}</Text>
                 </View>
-                <TouchableOpacity onPress={() => toggleFavorite(selectedFood.id)}>
+                <AppTouchable onPress={() => toggleFavorite(selectedFood.id)}>
                   <Ionicons
                     name={isFavorite(selectedFood.id) ? 'heart' : 'heart-outline'}
                     size={20}
                     color={isFavorite(selectedFood.id) ? '#FF6B9D' : colors.textMuted}
                   />
-                </TouchableOpacity>
+                </AppTouchable>
               </View>
               <View style={styles.qtyRow}>
-                <TouchableOpacity
+                <AppTouchable
                   style={[styles.qtyBtn, { backgroundColor: colors.primary }]}
                   onPress={() => setQty(q => String(Math.max(0.5, parseFloat(q) - 0.5)))}
                 >
                   <Ionicons name="remove" size={16} color={colors.textInverse} />
-                </TouchableOpacity>
+                </AppTouchable>
                 <TextInput
                   style={[styles.qtyInput, { color: colors.text, borderBottomColor: colors.primary }]}
                   value={qty}
@@ -344,12 +344,12 @@ export default function HomeScreen() {
                   keyboardType="decimal-pad"
                   selectTextOnFocus
                 />
-                <TouchableOpacity
+                <AppTouchable
                   style={[styles.qtyBtn, { backgroundColor: colors.primary }]}
                   onPress={() => setQty(q => String(parseFloat(q) + 0.5))}
                 >
                   <Ionicons name="add" size={16} color={colors.textInverse} />
-                </TouchableOpacity>
+                </AppTouchable>
                 <Text style={[typography.bodySm, { color: colors.textMuted, marginLeft: spacing.sm }]}>× serving</Text>
               </View>
               <View style={styles.nutriRow}>
@@ -424,40 +424,26 @@ export default function HomeScreen() {
             />
             {mealEditorError ? <Text style={[typography.caption, { color: colors.error, marginTop: spacing.xs }]}>{mealEditorError}</Text> : null}
             <View style={styles.mealEditorBtns}>
-              <TouchableOpacity style={[styles.mealEditorBtn, { backgroundColor: colors.bgTertiary }]} onPress={() => setMealEditor(null)}>
+              <AppTouchable style={[styles.mealEditorBtn, { backgroundColor: colors.bgTertiary }]} onPress={() => setMealEditor(null)}>
                 <Text style={[typography.bodyMed, { color: colors.textSecondary }]}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.mealEditorBtn, { backgroundColor: colors.primary }]} onPress={submitMealEditor}>
+              </AppTouchable>
+              <AppTouchable style={[styles.mealEditorBtn, { backgroundColor: colors.primary }]} onPress={submitMealEditor}>
                 <Text style={[typography.bodyMed, { color: colors.textInverse }]}>Save</Text>
-              </TouchableOpacity>
+              </AppTouchable>
             </View>
             {mealEditor?.mode === 'rename' && (
-              <TouchableOpacity
+              <AppTouchable
                 style={styles.mealEditorDelete}
                 onPress={() => { const original = mealEditor.original; setMealEditor(null); confirmDeleteMeal(original); }}
               >
                 <Ionicons name="trash-outline" size={15} color={colors.error} />
                 <Text style={[typography.bodySmMed, { color: colors.error, marginLeft: 6 }]}>Delete this meal</Text>
-              </TouchableOpacity>
+              </AppTouchable>
             )}
           </View>
         </View>
       </Modal>
     </SafeAreaView>
-  );
-}
-
-// ── Press micro-interaction wrapper ────────────────────────────────────────
-function PressScale({ children, onPress, style, to = 0.95, accessibilityLabel }) {
-  return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [style, pressed && { transform: [{ scale: to }] }]}
-      accessibilityLabel={accessibilityLabel}
-      accessibilityRole="button"
-    >
-      {children}
-    </Pressable>
   );
 }
 
@@ -669,14 +655,14 @@ function QuickStats({ waterMl, goals, addWater, burned, activities, router, colo
         </View>
         <View style={styles.waterBtns}>
           {[250, 500, 1000].map(ml => (
-            <PressScale
+            <AppTouchable
               key={ml}
               onPress={() => addWater(ml)}
               style={[styles.waterBtn, { backgroundColor: colors.primarySurface, borderColor: colors.cardBorder }]}
               accessibilityLabel={`Add ${ml} millilitres of water`}
             >
               <Text numberOfLines={1} style={[typography.micro, { color: colors.water }]}>+{ml}ml</Text>
-            </PressScale>
+            </AppTouchable>
           ))}
         </View>
       </Card>
@@ -693,13 +679,13 @@ function QuickStats({ waterMl, goals, addWater, burned, activities, router, colo
             ? 'No activity logged'
             : (activities.length + ' workout' + (activities.length > 1 ? 's' : '') + ' today')}
         </Text>
-        <PressScale
+        <AppTouchable
           onPress={() => router.navigate('/activity')}
           style={[styles.logActivityBtn, { backgroundColor: colors.primarySurface, borderColor: colors.cardBorder }]}
           accessibilityLabel="Log activity"
         >
           <Text style={[typography.micro, { color: colors.primaryLight }]}>Log activity</Text>
-        </PressScale>
+        </AppTouchable>
       </Card>
     </View>
   );
@@ -733,9 +719,8 @@ function MealSection({ meal, index = 0, items, mealCals, colors, onAdd, onRemove
   const tint = mealColor(meal, colors);
   return (
     <Animated.View layout={reduceMotion ? undefined : MEAL_LAYOUT}>
-      <Hoverable>
       <Card style={styles.mealCard} elevated>
-        <TouchableOpacity style={styles.mealHeader} onPress={() => setExpanded(e => !e)} activeOpacity={0.7}>
+        <AppTouchable style={styles.mealHeader} onPress={() => setExpanded(e => !e)} activeOpacity={0.7}>
           <View style={[styles.mealIconBox, { backgroundColor: tint + '22', borderColor: tint + '3a' }]}>
             <MealGlyph meal={meal} index={index} size={20} />
           </View>
@@ -748,30 +733,30 @@ function MealSection({ meal, index = 0, items, mealCals, colors, onAdd, onRemove
             )}
           </View>
           {onEdit && (
-            <TouchableOpacity
+            <AppTouchable
               style={styles.mealEditBtn}
               onPress={onEdit}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               accessibilityLabel={`Edit ${meal}`}
             >
               <Ionicons name="create-outline" size={16} color={colors.textMuted} />
-            </TouchableOpacity>
+            </AppTouchable>
           )}
-          <PressScale
+          <AppTouchable
             onPress={onAdd}
             style={[styles.addFoodBtn, { backgroundColor: colors.primaryMuted, borderColor: colors.primary + '40' }]}
             accessibilityLabel={`Add food to ${meal}`}
           >
             <Ionicons name="add" size={16} color={colors.primary} />
             <Text style={[typography.micro, { color: colors.primary, marginLeft: 3 }]}>ADD</Text>
-          </PressScale>
+          </AppTouchable>
           <Ionicons
             name={expanded ? 'chevron-up' : 'chevron-down'}
             size={16}
             color={colors.textMuted}
             style={{ marginLeft: 8 }}
           />
-        </TouchableOpacity>
+        </AppTouchable>
 
         {expanded && (
           <Animated.View entering={reduceMotion ? undefined : MEAL_ENTER} exiting={reduceMotion ? undefined : MEAL_EXIT}>
@@ -791,20 +776,19 @@ function MealSection({ meal, index = 0, items, mealCals, colors, onAdd, onRemove
                   <Text style={[typography.bodySmMed, { color: colors.primaryLight }]}>
                     {Math.round(item.calories * item.quantity)} kcal
                   </Text>
-                  <TouchableOpacity
+                  <AppTouchable
                     onPress={() => onRemove(item.logId)}
                     hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
                     style={{ marginLeft: spacing.sm }}
                   >
                     <Ionicons name="trash-outline" size={14} color={colors.textMuted} />
-                  </TouchableOpacity>
+                  </AppTouchable>
                 </View>
               ))
             )}
           </Animated.View>
         )}
       </Card>
-      </Hoverable>
     </Animated.View>
   );
 }

@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import AppTouchable from './AppTouchable';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useApp } from '../context/AppContext';
 import { radius, spacing, shadow } from '../utils/theme';
@@ -31,9 +32,9 @@ export default function Card({ children, style, onPress, elevated = false, noPad
 
   if (onPress) {
     return (
-      <TouchableOpacity style={cardStyle} onPress={onPress} activeOpacity={0.78}>
+      <AppTouchable style={cardStyle} onPress={onPress} activeOpacity={0.78}>
         {content}
-      </TouchableOpacity>
+      </AppTouchable>
     );
   }
   return <View style={cardStyle}>{content}</View>;

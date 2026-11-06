@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, SafeAreaView, StatusBar,
-  TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Pressable,
-} from 'react-native';
+  TextInput, KeyboardAvoidingView, Platform, Pressable } from 'react-native';
+import AppTouchable from '../components/AppTouchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useApp } from '../context/AppContext';
@@ -71,14 +71,14 @@ export default function LoginScreen() {
           {/* Mode toggle */}
           <View style={[styles.segment, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
             {[{ k: 'signin', l: 'Sign in' }, { k: 'signup', l: 'Create account' }].map(o => (
-              <TouchableOpacity
+              <AppTouchable
                 key={o.k}
                 style={[styles.segmentBtn, mode === o.k && { backgroundColor: colors.primary }]}
                 onPress={() => switchMode(o.k)}
                 activeOpacity={0.85}
               >
                 <Text style={[typography.bodySmMed, { color: mode === o.k ? colors.textInverse : colors.textSecondary }]}>{o.l}</Text>
-              </TouchableOpacity>
+              </AppTouchable>
             ))}
           </View>
 
@@ -119,9 +119,9 @@ export default function LoginScreen() {
                 autoCapitalize="none"
                 maxLength={16}
                 right={
-                  <TouchableOpacity onPress={() => setShowPassword(s => !s)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                  <AppTouchable onPress={() => setShowPassword(s => !s)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                     <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={18} color={colors.textMuted} />
-                  </TouchableOpacity>
+                  </AppTouchable>
                 }
               />
             </View>

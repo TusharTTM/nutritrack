@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import AppTouchable from './AppTouchable';
 import { colors, spacing, radius, shadow, typography } from '../utils/theme';
 
 const MealCard = ({ title, items, onAddFood, onRemoveFood, icon }) => {
@@ -25,9 +26,9 @@ const MealCard = ({ title, items, onAddFood, onRemoveFood, icon }) => {
             <Text style={styles.subtitle}>{Math.round(total.calories)} kcal</Text>
           </View>
         </View>
-        <TouchableOpacity style={styles.addBtn} onPress={onAddFood}>
+        <AppTouchable style={styles.addBtn} onPress={onAddFood}>
           <Text style={styles.addBtnText}>+ Add</Text>
-        </TouchableOpacity>
+        </AppTouchable>
       </View>
 
       {items.length === 0 ? (
@@ -43,9 +44,9 @@ const MealCard = ({ title, items, onAddFood, onRemoveFood, icon }) => {
             </View>
             <View style={styles.foodRight}>
               <Text style={styles.foodCals}>{Math.round(item.calories * item.quantity)} kcal</Text>
-              <TouchableOpacity onPress={() => onRemoveFood(item.logId)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <AppTouchable onPress={() => onRemoveFood(item.logId)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                 <Text style={styles.removeBtn}>✕</Text>
-              </TouchableOpacity>
+              </AppTouchable>
             </View>
           </View>
         ))
